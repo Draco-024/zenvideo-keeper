@@ -1,20 +1,25 @@
 
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getVideoById, updateVideo } from '@/utils/storage';
-import { Video } from '@/types/video';
+import { getVideoById, updateVideo, addCommentToVideo } from '@/utils/storage';
+import { Video, Comment } from '@/types/video';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Star, StarOff, Edit, Trash, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Star, StarOff, Edit, Trash, ExternalLink, Share2, FolderPlus, MessageCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
 import { EditVideoDialog } from '@/components/EditVideoDialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { formatDistanceToNow } from 'date-fns';
+import { ShareDialog } from '@/components/ShareDialog';
+import { PlaylistDialog } from '@/components/PlaylistDialog';
+import { CommentSection } from '@/components/CommentSection';
 
 const VideoPage = () => {
   const { id } = useParams<{ id: string }>();
   const [video, setVideo] = useState<Video | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+  const [isPlaylistDialogOpen, setIsPlaylistDialogOpen] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -80,6 +85,34 @@ const VideoPage = () => {
     }
   };
 
+  const handleAddComment = (commentData: Omit<Comment, 'id' | 'createdAt'>) => {
+    const newComment: Comment = {
+      ...commentData,
+      id: `comment-${Date.now()}`,
+      createdAt: Date.now()
+    };
+    
+    const updatedVideo = addCommentToVideo(video.id, newComment);
+    if (updatedVideo) {
+      setVideo(updatedVideo);
+      toast({
+        title: "Comment Added",
+        description: "Your comment has been added successfully."
+      });
+    }
+  };
+
+  const getEmbedUrl = () => {
+    if (video.videoType === 'googlephotos') {
+      // For Google Photos, we'll return the direct URL
+      return video.url;
+    } else {
+      // For YouTube
+      const youtubeId = getYouTubeId(video.url);
+      return `https://www.youtube.com/embed/${youtubeId}`;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <motion.div 
@@ -89,7 +122,7 @@ const VideoPage = () => {
         transition={{ duration: 0.3 }}
       >
         <div className="flex items-center mb-6">
-          <Button variant="ghost" onClick={() => navigate('/home')} className="mr-4">
+          <Button variant="ghost" onClick={() => navigate(-1)} className="mr-4">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back
           </Button>
@@ -111,6 +144,22 @@ const VideoPage = () => {
               className={video.favorite ? "text-yellow-500" : ""}
             >
               {video.favorite ? <Star className="h-4 w-4 fill-yellow-500" /> : <StarOff className="h-4 w-4" />}
+            </Button>
+            
+            <Button 
+              variant="outline" 
+              size="icon"
+              onClick={() => setIsShareDialogOpen(true)}
+            >
+              <Share2 className="h-4 w-4" />
+            </Button>
+            
+            <Button 
+              variant="outline" 
+              size="icon"
+              onClick={() => setIsPlaylistDialogOpen(true)}
+            >
+              <FolderPlus className="h-4 w-4" />
             </Button>
             
             <Button 
@@ -154,21 +203,53 @@ const VideoPage = () => {
         
         <div className="rounded-lg overflow-hidden shadow-md bg-black mb-6">
           <div className="aspect-video">
-            <iframe
-              src={`https://www.youtube.com/embed/${getYouTubeId(video.url)}`}
-              title={video.title}
-              className="w-full h-full"
-              allowFullScreen
-            />
+            {video.videoType === 'googlephotos' ? (
+              <div className="w-full h-full flex items-center justify-center bg-gray-900 text-white">
+                <a 
+                  href={video.url} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex flex-col items-center justify-center gap-4"
+                >
+                  <div className="h-20 w-20 rounded-full bg-gray-800 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+                      <path d="M8 2v20" />
+                      <path d="M16 2v20" />
+                      <path d="M2 8h20" />
+                      <path d="M2 16h20" />
+                    </svg>
+                  </div>
+                  <span className="text-lg font-medium">Open Google Photos Collection</span>
+                  <span className="text-sm text-gray-400">Click to view in Google Photos</span>
+                </a>
+              </div>
+            ) : (
+              <iframe
+                src={getEmbedUrl()}
+                title={video.title}
+                className="w-full h-full"
+                allowFullScreen
+              />
+            )}
           </div>
         </div>
         
         {video.description && (
           <div className="p-6 rounded-lg bg-card mb-6">
             <h2 className="text-lg font-semibold mb-2">Description</h2>
-            <p className="text-muted-foreground">{video.description}</p>
+            <p className="text-muted-foreground whitespace-pre-line">{video.description}</p>
           </div>
         )}
+        
+        <div className="p-6 rounded-lg bg-card mb-6">
+          <CommentSection 
+            videoId={video.id}
+            comments={video.comments || []}
+            onAddComment={handleAddComment}
+            youtubeUrl={video.videoType === 'youtube' ? video.url : undefined}
+          />
+        </div>
       </motion.div>
 
       <EditVideoDialog
@@ -176,6 +257,18 @@ const VideoPage = () => {
         onClose={() => setIsEditDialogOpen(false)}
         video={video}
         onEdit={handleUpdateVideo}
+      />
+      
+      <ShareDialog
+        open={isShareDialogOpen}
+        onClose={() => setIsShareDialogOpen(false)}
+        video={video}
+      />
+      
+      <PlaylistDialog
+        open={isPlaylistDialogOpen}
+        onClose={() => setIsPlaylistDialogOpen(false)}
+        video={video}
       />
     </div>
   );

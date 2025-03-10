@@ -3,9 +3,10 @@ import { Video, ViewMode } from '../types/video';
 import { Card } from './ui/card';
 import { motion, AnimatePresence } from 'framer-motion';
 import { formatDistanceToNow } from 'date-fns';
-import { Star, Edit, Trash, ExternalLink } from 'lucide-react';
+import { Star, Edit, Trash, ExternalLink, Share2, FolderPlus } from 'lucide-react';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
+import { getThumbnailUrl } from '@/utils/storage';
 
 interface VideoGridProps {
   videos: Video[];
@@ -39,12 +40,24 @@ export const VideoGrid = ({ videos, viewMode, onDelete, onEdit, onFavorite, onVi
               <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 h-full flex flex-col">
                 <div className="relative cursor-pointer" onClick={() => onView(video)}>
                   <div className="relative aspect-video bg-gray-900">
-                    <img
-                      src={`https://img.youtube.com/vi/${getYouTubeId(video.url)}/mqdefault.jpg`}
-                      alt={video.title}
-                      className="absolute w-full h-full object-cover"
-                      loading="lazy"
-                    />
+                    {video.videoType === 'googlephotos' ? (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+                          <path d="M8 2v20" />
+                          <path d="M16 2v20" />
+                          <path d="M2 8h20" />
+                          <path d="M2 16h20" />
+                        </svg>
+                      </div>
+                    ) : (
+                      <img
+                        src={`https://img.youtube.com/vi/${getYouTubeId(video.url)}/mqdefault.jpg`}
+                        alt={video.title}
+                        className="absolute w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                    )}
                     <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
                       <div className="w-16 h-16 rounded-full bg-black/60 flex items-center justify-center">
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
@@ -113,7 +126,7 @@ export const VideoGrid = ({ videos, viewMode, onDelete, onEdit, onFavorite, onVi
                         size="icon"
                         className="h-8 w-8"
                         asChild
-                        title="Open in YouTube"
+                        title="Open original link"
                       >
                         <a href={video.url} target="_blank" rel="noopener noreferrer">
                           <ExternalLink className="h-4 w-4" />
@@ -148,12 +161,24 @@ export const VideoGrid = ({ videos, viewMode, onDelete, onEdit, onFavorite, onVi
                   className="relative w-full sm:w-48 aspect-video rounded-md overflow-hidden cursor-pointer flex-shrink-0"
                   onClick={() => onView(video)}
                 >
-                  <img
-                    src={`https://img.youtube.com/vi/${getYouTubeId(video.url)}/mqdefault.jpg`}
-                    alt={video.title}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                  />
+                  {video.videoType === 'googlephotos' ? (
+                    <div className="absolute inset-0 flex items-center justify-center bg-gray-800">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+                        <path d="M8 2v20" />
+                        <path d="M16 2v20" />
+                        <path d="M2 8h20" />
+                        <path d="M2 16h20" />
+                      </svg>
+                    </div>
+                  ) : (
+                    <img
+                      src={`https://img.youtube.com/vi/${getYouTubeId(video.url)}/mqdefault.jpg`}
+                      alt={video.title}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                  )}
                   <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
                     <div className="w-12 h-12 rounded-full bg-black/60 flex items-center justify-center">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
@@ -224,7 +249,7 @@ export const VideoGrid = ({ videos, viewMode, onDelete, onEdit, onFavorite, onVi
                       size="icon"
                       className="h-8 w-8"
                       asChild
-                      title="Open in YouTube"
+                      title="Open original link"
                     >
                       <a href={video.url} target="_blank" rel="noopener noreferrer">
                         <ExternalLink className="h-4 w-4" />

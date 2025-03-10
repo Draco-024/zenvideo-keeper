@@ -9,6 +9,7 @@ import { Textarea } from "./ui/textarea";
 import { motion } from "framer-motion";
 import { getYouTubeId } from "@/utils/helpers";
 import { AlertCircle } from "lucide-react";
+import { isGooglePhotosUrl, getVideoType } from "@/utils/storage";
 
 interface AddVideoDialogProps {
   open: boolean;
@@ -26,7 +27,7 @@ export const AddVideoDialog = ({ open, onClose, onAdd }: AddVideoDialogProps) =>
 
   const validateUrl = (url: string) => {
     const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/;
-    return youtubeRegex.test(url);
+    return youtubeRegex.test(url) || isGooglePhotosUrl(url);
   };
 
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,13 +47,20 @@ export const AddVideoDialog = ({ open, onClose, onAdd }: AddVideoDialogProps) =>
     
     if (!isValidUrl) return;
     
+    const videoType = getVideoType(url);
+    const thumbnailUrl = videoType === 'youtube'
+      ? `https://img.youtube.com/vi/${getYouTubeId(url)}/mqdefault.jpg`
+      : undefined;
+    
     onAdd({ 
       title, 
       url, 
       category,
       description: description.trim() ? description : undefined,
-      thumbnail: `https://img.youtube.com/vi/${getYouTubeId(url)}/mqdefault.jpg`,
-      favorite: false
+      thumbnail: thumbnailUrl,
+      favorite: false,
+      videoType: videoType,
+      comments: []
     });
     
     // Reset form
@@ -90,11 +98,11 @@ export const AddVideoDialog = ({ open, onClose, onAdd }: AddVideoDialogProps) =>
               <div className="space-y-4">
                 <div className="space-y-2">
                   <label htmlFor="url" className="text-sm font-medium">
-                    YouTube URL
+                    Video URL
                   </label>
                   <Input
                     id="url"
-                    placeholder="https://www.youtube.com/watch?v=..."
+                    placeholder="YouTube or Google Photos URL"
                     value={url}
                     onChange={handleUrlChange}
                     required
@@ -103,7 +111,7 @@ export const AddVideoDialog = ({ open, onClose, onAdd }: AddVideoDialogProps) =>
                   {!isValidUrl && (
                     <p className="text-red-500 text-xs flex items-center">
                       <AlertCircle className="h-3 w-3 mr-1" />
-                      Please enter a valid YouTube URL
+                      Please enter a valid YouTube or Google Photos URL
                     </p>
                   )}
                 </div>
@@ -121,7 +129,7 @@ export const AddVideoDialog = ({ open, onClose, onAdd }: AddVideoDialogProps) =>
                   />
                 </div>
                 
-                {url && isValidUrl && getYouTubeId(url) && (
+                {url && isValidUrl && !isGooglePhotosUrl(url) && getYouTubeId(url) && (
                   <div className="mt-4">
                     <p className="text-sm font-medium mb-2">Preview</p>
                     <div className="aspect-video rounded-md overflow-hidden bg-black">
@@ -132,6 +140,22 @@ export const AddVideoDialog = ({ open, onClose, onAdd }: AddVideoDialogProps) =>
                         allowFullScreen
                         className="w-full h-full"
                       ></iframe>
+                    </div>
+                  </div>
+                )}
+                
+                {url && isValidUrl && isGooglePhotosUrl(url) && (
+                  <div className="mt-4">
+                    <p className="text-sm font-medium mb-2">Google Photos Link</p>
+                    <div className="p-4 rounded-md bg-card border flex items-center gap-3">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+                        <path d="M8 2v20" />
+                        <path d="M16 2v20" />
+                        <path d="M2 8h20" />
+                        <path d="M2 16h20" />
+                      </svg>
+                      <span>Google Photos collection will be added</span>
                     </div>
                   </div>
                 )}
