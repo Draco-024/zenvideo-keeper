@@ -15,9 +15,10 @@ interface VideoGridProps {
   onEdit: (video: Video) => void;
   onFavorite: (video: Video) => void;
   onView: (video: Video) => void;
+  showBannerInListView?: boolean;
 }
 
-export const VideoGrid = ({ videos, viewMode, onDelete, onEdit, onFavorite, onView }: VideoGridProps) => {
+export const VideoGrid = ({ videos, viewMode, onDelete, onEdit, onFavorite, onView, showBannerInListView = false }: VideoGridProps) => {
   const getYouTubeId = (url: string) => {
     const match = url.match(/[?&]v=([^&]+)/);
     return match ? match[1] : '';
