@@ -5,6 +5,10 @@ import { Button } from "./ui/button";
 import { useState } from "react";
 import { Video } from "../types/video";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { Textarea } from "./ui/textarea";
+import { motion } from "framer-motion";
+import { getYouTubeId } from "@/utils/helpers";
+import { AlertCircle } from "lucide-react";
 
 interface AddVideoDialogProps {
   open: boolean;
@@ -16,50 +20,186 @@ export const AddVideoDialog = ({ open, onClose, onAdd }: AddVideoDialogProps) =>
   const [title, setTitle] = useState("");
   const [url, setUrl] = useState("");
   const [category, setCategory] = useState<"aptitude" | "reasoning" | "english">("aptitude");
+  const [description, setDescription] = useState("");
+  const [isValidUrl, setIsValidUrl] = useState(true);
+  const [currentStep, setCurrentStep] = useState(1);
+
+  const validateUrl = (url: string) => {
+    const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/;
+    return youtubeRegex.test(url);
+  };
+
+  const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newUrl = e.target.value;
+    setUrl(newUrl);
+    setIsValidUrl(newUrl === "" || validateUrl(newUrl));
+  };
+
+  const handleNextStep = () => {
+    if (url && title && isValidUrl) {
+      setCurrentStep(2);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onAdd({ title, url, category });
+    
+    if (!isValidUrl) return;
+    
+    onAdd({ 
+      title, 
+      url, 
+      category,
+      description: description.trim() ? description : undefined,
+      thumbnail: `https://img.youtube.com/vi/${getYouTubeId(url)}/mqdefault.jpg`,
+      favorite: false
+    });
+    
+    // Reset form
     setTitle("");
     setUrl("");
     setCategory("aptitude");
+    setDescription("");
+    setCurrentStep(1);
+    onClose();
+  };
+
+  const resetAndClose = () => {
+    setTitle("");
+    setUrl("");
+    setCategory("aptitude");
+    setDescription("");
+    setCurrentStep(1);
     onClose();
   };
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
+    <Dialog open={open} onOpenChange={resetAndClose}>
+      <DialogContent className="sm:max-w-[500px] overflow-hidden">
         <DialogHeader>
           <DialogTitle>Add New Video</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-          <Input
-            placeholder="Video Title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-          />
-          <Input
-            placeholder="Video URL"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            required
-          />
-          <Select value={category} onValueChange={(value: any) => setCategory(value)}>
-            <SelectTrigger>
-              <SelectValue placeholder="Category" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="aptitude">Aptitude</SelectItem>
-              <SelectItem value="reasoning">Reasoning</SelectItem>
-              <SelectItem value="english">English</SelectItem>
-            </SelectContent>
-          </Select>
-          <div className="flex justify-end space-x-2">
-            <Button variant="outline" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button type="submit">Add Video</Button>
+        
+        <form onSubmit={handleSubmit} className="space-y-4 mt-2">
+          <div className="relative overflow-hidden" style={{ height: currentStep === 1 ? 'auto' : '0', opacity: currentStep === 1 ? 1 : 0 }}>
+            <motion.div
+              initial={{ x: currentStep === 1 ? 100 : 0 }}
+              animate={{ x: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label htmlFor="url" className="text-sm font-medium">
+                    YouTube URL
+                  </label>
+                  <Input
+                    id="url"
+                    placeholder="https://www.youtube.com/watch?v=..."
+                    value={url}
+                    onChange={handleUrlChange}
+                    required
+                    className={!isValidUrl ? "border-red-500" : ""}
+                  />
+                  {!isValidUrl && (
+                    <p className="text-red-500 text-xs flex items-center">
+                      <AlertCircle className="h-3 w-3 mr-1" />
+                      Please enter a valid YouTube URL
+                    </p>
+                  )}
+                </div>
+                
+                <div className="space-y-2">
+                  <label htmlFor="title" className="text-sm font-medium">
+                    Video Title
+                  </label>
+                  <Input
+                    id="title"
+                    placeholder="Enter a descriptive title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    required
+                  />
+                </div>
+                
+                {url && isValidUrl && getYouTubeId(url) && (
+                  <div className="mt-4">
+                    <p className="text-sm font-medium mb-2">Preview</p>
+                    <div className="aspect-video rounded-md overflow-hidden bg-black">
+                      <iframe
+                        src={`https://www.youtube.com/embed/${getYouTubeId(url)}`}
+                        title="YouTube video player"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                        className="w-full h-full"
+                      ></iframe>
+                    </div>
+                  </div>
+                )}
+                
+                <div className="flex justify-end space-x-2 pt-2">
+                  <Button variant="outline" onClick={resetAndClose} type="button">
+                    Cancel
+                  </Button>
+                  <Button 
+                    type="button" 
+                    onClick={handleNextStep}
+                    disabled={!url || !title || !isValidUrl}
+                  >
+                    Next
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+          
+          <div className="relative overflow-hidden" style={{ height: currentStep === 2 ? 'auto' : '0', opacity: currentStep === 2 ? 1 : 0 }}>
+            <motion.div
+              initial={{ x: currentStep === 2 ? 100 : 0 }}
+              animate={{ x: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label htmlFor="category" className="text-sm font-medium">
+                    Category
+                  </label>
+                  <Select value={category} onValueChange={(value: any) => setCategory(value)}>
+                    <SelectTrigger id="category">
+                      <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="aptitude">Aptitude</SelectItem>
+                      <SelectItem value="reasoning">Reasoning</SelectItem>
+                      <SelectItem value="english">English</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="space-y-2">
+                  <label htmlFor="description" className="text-sm font-medium">
+                    Description (optional)
+                  </label>
+                  <Textarea
+                    id="description"
+                    placeholder="Add a description..."
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    rows={4}
+                  />
+                </div>
+                
+                <div className="flex justify-between space-x-2 pt-2">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setCurrentStep(1)} 
+                    type="button"
+                  >
+                    Back
+                  </Button>
+                  <Button type="submit">Add Video</Button>
+                </div>
+              </div>
+            </motion.div>
           </div>
         </form>
       </DialogContent>
