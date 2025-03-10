@@ -98,7 +98,10 @@ export const VideoGrid = ({ videos, viewMode, onDelete, onEdit, onFavorite, onVi
                           variant="ghost"
                           size="icon"
                           className={`h-8 w-8 ${video.favorite ? 'text-yellow-500' : ''}`}
-                          onClick={() => onFavorite(video)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onFavorite(video);
+                          }}
                           title={video.favorite ? "Remove from favorites" : "Add to favorites"}
                         >
                           <Star className={`h-4 w-4 ${video.favorite ? 'fill-yellow-500' : ''}`} />
@@ -107,7 +110,10 @@ export const VideoGrid = ({ videos, viewMode, onDelete, onEdit, onFavorite, onVi
                           variant="ghost"
                           size="icon"
                           className="h-8 w-8"
-                          onClick={() => onEdit(video)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onEdit(video);
+                          }}
                           title="Edit video"
                         >
                           <Edit className="h-4 w-4" />
@@ -116,7 +122,10 @@ export const VideoGrid = ({ videos, viewMode, onDelete, onEdit, onFavorite, onVi
                           variant="ghost"
                           size="icon"
                           className="h-8 w-8 text-red-500 hover:text-red-600"
-                          onClick={() => onDelete(video.id)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onDelete(video.id);
+                          }}
                           title="Delete video"
                         >
                           <Trash className="h-4 w-4" />
@@ -126,6 +135,7 @@ export const VideoGrid = ({ videos, viewMode, onDelete, onEdit, onFavorite, onVi
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8"
+                        onClick={(e) => e.stopPropagation()}
                         asChild
                         title="Open original link"
                       >
@@ -187,7 +197,7 @@ export const VideoGrid = ({ videos, viewMode, onDelete, onEdit, onFavorite, onVi
                       </svg>
                     </div>
                   </div>
-                  {video.favorite && (
+                  {video.favorite && showBannerInListView && (
                     <div className="absolute top-2 right-2">
                       <Badge variant="secondary" className="bg-yellow-500/80 text-white">
                         <Star className="h-3 w-3 mr-1 fill-white" />
@@ -208,6 +218,11 @@ export const VideoGrid = ({ videos, viewMode, onDelete, onEdit, onFavorite, onVi
                         <Badge variant="outline" className="capitalize">
                           {video.category}
                         </Badge>
+                        {video.favorite && !showBannerInListView && (
+                          <Badge variant="secondary" className="bg-yellow-500/80 text-white">
+                            <Star className="h-3 w-3 fill-white" />
+                          </Badge>
+                        )}
                       </div>
                     </div>
                     <p className="text-muted-foreground text-sm my-1 line-clamp-1">
@@ -222,7 +237,10 @@ export const VideoGrid = ({ videos, viewMode, onDelete, onEdit, onFavorite, onVi
                       variant="ghost"
                       size="icon"
                       className={`h-8 w-8 ${video.favorite ? 'text-yellow-500' : ''}`}
-                      onClick={() => onFavorite(video)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onFavorite(video);
+                      }}
                       title={video.favorite ? "Remove from favorites" : "Add to favorites"}
                     >
                       <Star className={`h-4 w-4 ${video.favorite ? 'fill-yellow-500' : ''}`} />
@@ -231,7 +249,10 @@ export const VideoGrid = ({ videos, viewMode, onDelete, onEdit, onFavorite, onVi
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8"
-                      onClick={() => onEdit(video)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onEdit(video);
+                      }}
                       title="Edit video"
                     >
                       <Edit className="h-4 w-4" />
@@ -240,7 +261,10 @@ export const VideoGrid = ({ videos, viewMode, onDelete, onEdit, onFavorite, onVi
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8 text-red-500 hover:text-red-600"
-                      onClick={() => onDelete(video.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDelete(video.id);
+                      }}
                       title="Delete video"
                     >
                       <Trash className="h-4 w-4" />
@@ -249,6 +273,7 @@ export const VideoGrid = ({ videos, viewMode, onDelete, onEdit, onFavorite, onVi
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8"
+                      onClick={(e) => e.stopPropagation()}
                       asChild
                       title="Open original link"
                     >

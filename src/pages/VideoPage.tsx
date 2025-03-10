@@ -113,6 +113,39 @@ const VideoPage = () => {
     }
   };
 
+  // Function to format description with clickable links
+  const formatDescription = (description: string) => {
+    // Regular expression to match URLs
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    
+    // Split the description by the URLs
+    const parts = description.split(urlRegex);
+    
+    // Match all URLs in the description
+    const urls = description.match(urlRegex) || [];
+    
+    // Combine parts and URLs
+    const formattedParts = [];
+    for (let i = 0; i < parts.length; i++) {
+      formattedParts.push(parts[i]);
+      if (i < urls.length) {
+        formattedParts.push(
+          <a 
+            key={i} 
+            href={urls[i]} 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="text-primary hover:underline"
+          >
+            {urls[i]}
+          </a>
+        );
+      }
+    }
+    
+    return formattedParts;
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <motion.div 
@@ -142,6 +175,7 @@ const VideoPage = () => {
               size="icon" 
               onClick={handleToggleFavorite}
               className={video.favorite ? "text-yellow-500" : ""}
+              title={video.favorite ? "Remove from favorites" : "Add to favorites"}
             >
               {video.favorite ? <Star className="h-4 w-4 fill-yellow-500" /> : <StarOff className="h-4 w-4" />}
             </Button>
@@ -150,6 +184,7 @@ const VideoPage = () => {
               variant="outline" 
               size="icon"
               onClick={() => setIsShareDialogOpen(true)}
+              title="Share video"
             >
               <Share2 className="h-4 w-4" />
             </Button>
@@ -158,6 +193,7 @@ const VideoPage = () => {
               variant="outline" 
               size="icon"
               onClick={() => setIsPlaylistDialogOpen(true)}
+              title="Add to playlist"
             >
               <FolderPlus className="h-4 w-4" />
             </Button>
@@ -166,13 +202,14 @@ const VideoPage = () => {
               variant="outline" 
               size="icon"
               onClick={() => setIsEditDialogOpen(true)}
+              title="Edit video"
             >
               <Edit className="h-4 w-4" />
             </Button>
             
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="outline" size="icon" className="text-red-500">
+                <Button variant="outline" size="icon" className="text-red-500" title="Delete video">
                   <Trash className="h-4 w-4" />
                 </Button>
               </AlertDialogTrigger>
@@ -193,7 +230,7 @@ const VideoPage = () => {
               </AlertDialogContent>
             </AlertDialog>
             
-            <Button variant="outline" size="icon" asChild>
+            <Button variant="outline" size="icon" asChild title="Open in original site">
               <a href={video.url} target="_blank" rel="noopener noreferrer">
                 <ExternalLink className="h-4 w-4" />
               </a>
@@ -238,7 +275,9 @@ const VideoPage = () => {
         {video.description && (
           <div className="p-6 rounded-lg bg-card mb-6">
             <h2 className="text-lg font-semibold mb-2">Description</h2>
-            <p className="text-muted-foreground whitespace-pre-line">{video.description}</p>
+            <div className="text-muted-foreground whitespace-pre-line">
+              {formatDescription(video.description)}
+            </div>
           </div>
         )}
         

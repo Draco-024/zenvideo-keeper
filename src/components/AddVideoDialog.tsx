@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Textarea } from "./ui/textarea";
 import { motion } from "framer-motion";
 import { getYouTubeId } from "@/utils/helpers";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, ExternalLink } from "lucide-react";
 import { isGooglePhotosUrl, getVideoType } from "@/utils/storage";
 
 interface AddVideoDialogProps {
@@ -131,7 +131,14 @@ export const AddVideoDialog = ({ open, onClose, onAdd }: AddVideoDialogProps) =>
                 
                 {url && isValidUrl && !isGooglePhotosUrl(url) && getYouTubeId(url) && (
                   <div className="mt-4">
-                    <p className="text-sm font-medium mb-2">Preview</p>
+                    <div className="flex justify-between items-center mb-2">
+                      <p className="text-sm font-medium">Preview</p>
+                      <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" asChild>
+                        <a href={url} target="_blank" rel="noopener noreferrer">
+                          <ExternalLink className="h-3 w-3 mr-1" /> Open in YouTube
+                        </a>
+                      </Button>
+                    </div>
                     <div className="aspect-video rounded-md overflow-hidden bg-black">
                       <iframe
                         src={`https://www.youtube.com/embed/${getYouTubeId(url)}`}
@@ -146,7 +153,14 @@ export const AddVideoDialog = ({ open, onClose, onAdd }: AddVideoDialogProps) =>
                 
                 {url && isValidUrl && isGooglePhotosUrl(url) && (
                   <div className="mt-4">
-                    <p className="text-sm font-medium mb-2">Google Photos Link</p>
+                    <div className="flex justify-between items-center mb-2">
+                      <p className="text-sm font-medium">Google Photos Link</p>
+                      <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" asChild>
+                        <a href={url} target="_blank" rel="noopener noreferrer">
+                          <ExternalLink className="h-3 w-3 mr-1" /> Open in Google Photos
+                        </a>
+                      </Button>
+                    </div>
                     <div className="p-4 rounded-md bg-card border flex items-center gap-3">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
