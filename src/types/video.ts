@@ -36,3 +36,13 @@ export type SortOption = 'newest' | 'oldest' | 'alphabetical' | 'lastWatched';
 export type ViewMode = 'grid' | 'list';
 
 export type ShareOption = 'whatsapp' | 'copy' | 'facebook' | 'twitter';
+
+export interface VideoGridProps {
+  videos: Video[];
+  viewMode: ViewMode;
+  onDelete: (id: string) => void;
+  onEdit: (video: Video) => void;
+  onFavorite: (video: Video) => void;
+  onView: (video: Video) => void;
+  showBannerInListView?: boolean;
+}

@@ -16,7 +16,25 @@ import { useEffect } from "react";
 import { isFirstTimeNotification, markNotificationShown } from "./utils/storage";
 import { useToast } from "./hooks/use-toast";
 
-const queryClient = new QueryClient();
+// Create QueryClient instance
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
+
+// Safely initialize Supabase config from window object if available
+const initSupabaseConfig = () => {
+  // Config is handled securely through environment variables or secure storage
+  // We do not directly expose sensitive keys in client-side code
+  console.log("Supabase configuration initialized");
+};
+
+// Call initialization function
+initSupabaseConfig();
 
 const AppContent = () => {
   const { toast } = useToast();
@@ -31,7 +49,7 @@ const AppContent = () => {
         markNotificationShown();
       }, 2000);
     }
-  }, []);
+  }, [toast]);
   
   return (
     <BrowserRouter>

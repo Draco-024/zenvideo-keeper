@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { VideoGrid } from '../components/VideoGrid';
 import { AddVideoDialog } from '../components/AddVideoDialog';
@@ -6,13 +5,14 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Video, Category, SortOption, ViewMode } from '../types/video';
 import { addVideo, getVideos, deleteVideo, updateVideo, importSampleVideos } from '../utils/storage';
-import { Plus, Search, Grid, List, SlidersHorizontal, Star, Clock, ArrowUpDown } from 'lucide-react';
+import { Plus, Search, Grid, List, SlidersHorizontal, UserRound } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { ViewOptionsDialog } from '@/components/ViewOptionsDialog';
 import { useNavigate } from 'react-router-dom';
+import { ProfileDialog } from '@/components/ProfileDialog';
 
 const HomePage = () => {
   const [videos, setVideos] = useState<Video[]>([]);
@@ -22,12 +22,34 @@ const HomePage = () => {
   const [sortOption, setSortOption] = useState<SortOption>('newest');
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isOptionsDialogOpen, setIsOptionsDialogOpen] = useState(false);
+  const [isProfileDialogOpen, setIsProfileDialogOpen] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
     setVideos(getVideos());
   }, []);
+
+  // Track watched videos count for profile
+  useEffect(() => {
+    // Set initial profile stats if not already set
+    if (!localStorage.getItem("videosWatched")) {
+      localStorage.setItem("videosWatched", "0");
+    }
+    if (!localStorage.getItem("favoriteVideos")) {
+      const favorites = videos.filter(v => v.favorite).length;
+      localStorage.setItem("favoriteVideos", favorites.toString());
+    }
+    if (!localStorage.getItem("daysActive")) {
+      localStorage.setItem("daysActive", "1");
+    }
+    if (!localStorage.getItem("accountLevel")) {
+      localStorage.setItem("accountLevel", "Beginner");
+    }
+    if (!localStorage.getItem("username")) {
+      localStorage.setItem("username", "User");
+    }
+  }, [videos]);
 
   useEffect(() => {
     // Import sample videos if there are none
@@ -77,11 +99,29 @@ const HomePage = () => {
     const updatedVideo = { ...video, favorite: !video.favorite };
     updateVideo(updatedVideo);
     setVideos(getVideos());
+    
+    // Update favorite count for profile
+    const favorites = getVideos().filter(v => v.favorite).length;
+    localStorage.setItem("favoriteVideos", favorites.toString());
   };
 
   const handleViewVideo = (video: Video) => {
     const updatedVideo = { ...video, lastWatched: Date.now() };
     updateVideo(updatedVideo);
+    
+    // Update watched videos count for profile
+    const watched = parseInt(localStorage.getItem("videosWatched") || "0") + 1;
+    localStorage.setItem("videosWatched", watched.toString());
+    
+    // Update account level based on watched videos
+    if (watched >= 20) {
+      localStorage.setItem("accountLevel", "Expert");
+    } else if (watched >= 10) {
+      localStorage.setItem("accountLevel", "Advanced");
+    } else if (watched >= 5) {
+      localStorage.setItem("accountLevel", "Intermediate");
+    }
+    
     navigate(`/video/${video.id}`);
   };
 
@@ -127,6 +167,14 @@ const HomePage = () => {
               BankZen
             </motion.h1>
             <div className="flex gap-2">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => setIsProfileDialogOpen(true)}
+                className="rounded-full"
+              >
+                <UserRound className="h-5 w-5" />
+              </Button>
               <Button variant="outline" size="icon" onClick={() => setIsOptionsDialogOpen(true)}>
                 <SlidersHorizontal className="h-4 w-4" />
               </Button>
@@ -173,7 +221,6 @@ const HomePage = () => {
                 <Select value={sortOption} onValueChange={(value) => setSortOption(value as SortOption)}>
                   <SelectTrigger className="w-[140px]">
                     <div className="flex items-center">
-                      <ArrowUpDown className="mr-2 h-3.5 w-3.5" />
                       <span>Sort By</span>
                     </div>
                   </SelectTrigger>
@@ -217,6 +264,7 @@ const HomePage = () => {
               onEdit={handleEditVideo}
               onFavorite={handleToggleFavorite}
               onView={handleViewVideo}
+              showBannerInListView={false}
             />
           )}
         </motion.div>
@@ -235,6 +283,11 @@ const HomePage = () => {
         setViewMode={setViewMode}
         sortOption={sortOption}
         setSortOption={setSortOption}
+      />
+      
+      <ProfileDialog
+        open={isProfileDialogOpen}
+        onClose={() => setIsProfileDialogOpen(false)}
       />
     </div>
   );
