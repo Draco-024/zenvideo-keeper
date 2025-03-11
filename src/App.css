@@ -58,7 +58,14 @@ input[type="text"], input[type="search"] {
   background-color: hsl(var(--primary));
   color: hsl(var(--primary-foreground));
   animation: notification-fade 3s forwards;
-  position: relative;
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 100;
+  max-width: 90%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 @keyframes notification-fade {
@@ -74,6 +81,40 @@ input[type="text"], input[type="search"] {
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
+}
+
+/* Fix video description layout for mobile */
+@media (max-width: 640px) {
+  .video-description {
+    font-size: 0.9rem;
+    padding: 0.75rem;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+  
+  .video-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .video-actions {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 0.5rem;
+  }
+}
+
+/* Translucent category buttons */
+.category-button {
+  background-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.2s ease;
+}
+
+.category-button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 /* Fix list view for mobile */
