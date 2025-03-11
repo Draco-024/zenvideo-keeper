@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getVideoById, updateVideo, addCommentToVideo } from '@/utils/storage';
@@ -38,6 +37,19 @@ const VideoPage = () => {
       }
     }
   }, [id, navigate, toast]);
+
+  useEffect(() => {
+    const handleBackNavigation = (e: PopStateEvent) => {
+      e.preventDefault();
+      navigate('/home');
+    };
+
+    window.addEventListener('popstate', handleBackNavigation);
+
+    return () => {
+      window.removeEventListener('popstate', handleBackNavigation);
+    };
+  }, [navigate]);
 
   if (!video) {
     return (

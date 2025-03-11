@@ -1,14 +1,14 @@
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Button } from "./ui/button";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { Badge } from "./ui/badge";
-import { Settings, UserRound, Star, Trophy, LogOut, Bookmark, Home, Clock, List } from "lucide-react";
-import { motion } from "framer-motion";
-import { useMediaQuery } from "@/hooks/use-media-query";
+import { Input } from "./ui/input";
+import { LogOut, Home, Bookmark, List, Settings } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "./ui/sheet";
+import { ScrollArea } from "./ui/scroll-area";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 interface ProfileDialogProps {
   open: boolean;
@@ -23,96 +23,24 @@ export const ProfileDialog = ({ open, onClose }: ProfileDialogProps) => {
   const [username, setUsername] = useState(
     localStorage.getItem("username") || "User"
   );
+  const [isEditingUsername, setIsEditingUsername] = useState(false);
   const navigate = useNavigate();
-  
-  // Mock profile stats
-  const stats = {
-    videosWatched: localStorage.getItem("videosWatched") || "0",
-    favoriteVideos: localStorage.getItem("favoriteVideos") || "0",
-    daysActive: localStorage.getItem("daysActive") || "1",
-    accountLevel: localStorage.getItem("accountLevel") || "Beginner"
-  };
 
-  const achievements = [
-    { name: "First Video", earned: true, icon: <Star className="h-4 w-4 text-yellow-500" /> },
-    { name: "Collection Started", earned: Number(stats.videosWatched) >= 5, icon: <Trophy className="h-4 w-4 text-blue-500" /> },
-    { name: "Video Expert", earned: Number(stats.videosWatched) >= 10, icon: <Trophy className="h-4 w-4 text-purple-500" /> }
-  ];
+  const handleUsernameChange = (newUsername: string) => {
+    if (newUsername.trim()) {
+      setUsername(newUsername);
+      localStorage.setItem("username", newUsername);
+      setIsEditingUsername(false);
+    }
+  };
 
   const handleNavigate = (path: string) => {
     navigate(path);
     onClose();
   };
 
-  if (isMobile) {
-    return (
-      <Sheet open={open} onOpenChange={onClose}>
-        <SheetContent side="bottom" className="h-[85vh] rounded-t-xl">
-          <SheetHeader className="text-left">
-            <SheetTitle>Your Profile</SheetTitle>
-          </SheetHeader>
-          
-          <ProfileContent 
-            profileImage={profileImage} 
-            setProfileImage={setProfileImage} 
-            username={username} 
-            stats={stats} 
-            achievements={achievements} 
-            handleNavigate={handleNavigate}
-          />
-        </SheetContent>
-      </Sheet>
-    );
-  }
-
-  return (
-    <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Your Profile</DialogTitle>
-        </DialogHeader>
-        
-        <ProfileContent 
-          profileImage={profileImage} 
-          setProfileImage={setProfileImage} 
-          username={username} 
-          stats={stats} 
-          achievements={achievements} 
-          handleNavigate={handleNavigate}
-        />
-      </DialogContent>
-    </Dialog>
-  );
-};
-
-interface ProfileContentProps {
-  profileImage: string | null;
-  setProfileImage: (image: string) => void;
-  username: string;
-  stats: {
-    videosWatched: string;
-    favoriteVideos: string;
-    daysActive: string;
-    accountLevel: string;
-  };
-  achievements: Array<{
-    name: string;
-    earned: boolean;
-    icon: React.ReactNode;
-  }>;
-  handleNavigate: (path: string) => void;
-}
-
-const ProfileContent = ({ 
-  profileImage, 
-  setProfileImage, 
-  username, 
-  stats, 
-  achievements,
-  handleNavigate
-}: ProfileContentProps) => {
-  return (
-    <>
+  const content = (
+    <ScrollArea className="h-[80vh] px-2">
       <div className="flex flex-col items-center gap-4 py-4">
         <Avatar className="h-24 w-24 cursor-pointer" onClick={() => document.getElementById('avatarUpload')?.click()}>
           <AvatarImage src={profileImage || undefined} alt={username} />
@@ -139,55 +67,27 @@ const ProfileContent = ({
           }}
         />
         
-        <div className="text-xl font-semibold">{username}</div>
-        <Badge variant="secondary">{stats.accountLevel}</Badge>
-        
-        <div className="grid grid-cols-2 gap-4 w-full mt-2">
-          <div className="bg-muted rounded-lg p-3 text-center">
-            <div className="text-2xl font-bold">{stats.videosWatched}</div>
-            <div className="text-sm text-muted-foreground">Videos Watched</div>
+        {isEditingUsername ? (
+          <div className="flex items-center gap-2">
+            <Input
+              defaultValue={username}
+              autoFocus
+              onBlur={(e) => handleUsernameChange(e.target.value)}
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  handleUsernameChange((e.target as HTMLInputElement).value);
+                }
+              }}
+            />
           </div>
-          <div className="bg-muted rounded-lg p-3 text-center">
-            <div className="text-2xl font-bold">{stats.favoriteVideos}</div>
-            <div className="text-sm text-muted-foreground">Favorites</div>
-          </div>
-          <div className="bg-muted rounded-lg p-3 text-center">
-            <div className="text-2xl font-bold">{stats.daysActive}</div>
-            <div className="text-sm text-muted-foreground">Days Active</div>
-          </div>
-          <div className="bg-muted rounded-lg p-3 text-center">
-            <div className="text-2xl font-bold">
-              {achievements.filter(a => a.earned).length}/{achievements.length}
-            </div>
-            <div className="text-sm text-muted-foreground">Achievements</div>
-          </div>
-        </div>
-        
-        <div className="w-full mt-2">
-          <h3 className="font-medium mb-2 text-left">Achievements</h3>
-          <div className="space-y-2">
-            {achievements.map((achievement, index) => (
-              <motion.div
-                key={achievement.name}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className={`flex items-center gap-2 p-2 rounded-md ${
-                  achievement.earned ? "bg-muted" : "bg-muted/50 opacity-50"
-                }`}
-              >
-                {achievement.icon}
-                <span>{achievement.name}</span>
-                {achievement.earned && (
-                  <Badge variant="outline" className="ml-auto">Earned</Badge>
-                )}
-              </motion.div>
-            ))}
-          </div>
-        </div>
+        ) : (
+          <Button variant="ghost" onClick={() => setIsEditingUsername(true)}>
+            {username}
+          </Button>
+        )}
       </div>
       
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 mt-4">
         <Button variant="outline" className="w-full justify-start" onClick={() => handleNavigate('/home')}>
           <Home className="mr-2 h-4 w-4" />
           Home
@@ -209,6 +109,30 @@ const ProfileContent = ({
           Sign Out
         </Button>
       </div>
-    </>
+    </ScrollArea>
+  );
+
+  if (isMobile) {
+    return (
+      <Sheet open={open} onOpenChange={onClose}>
+        <SheetContent side="bottom" className="h-[85vh] rounded-t-xl">
+          <SheetHeader className="text-left">
+            <SheetTitle>Your Profile</SheetTitle>
+          </SheetHeader>
+          {content}
+        </SheetContent>
+      </Sheet>
+    );
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Your Profile</DialogTitle>
+        </DialogHeader>
+        {content}
+      </DialogContent>
+    </Dialog>
   );
 };

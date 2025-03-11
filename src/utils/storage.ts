@@ -1,4 +1,3 @@
-
 import { Video, Playlist, Comment } from '../types/video';
 
 const STORAGE_KEY = 'bankzen_videos';
@@ -243,7 +242,6 @@ export const importSampleVideos = () => {
       'https://www.youtube.com/watch?v=bj9ITl4TPXE',
     ];
     
-    // Reasoning YouTube URLs - replacing with new videos
     const reasoningUrls = [
       'https://www.youtube.com/watch?v=NcLSjxKVT_k',
       'https://www.youtube.com/watch?v=rsibH4hdb9k',
@@ -323,22 +321,51 @@ export const importSampleVideos = () => {
       'https://www.youtube.com/watch?v=41Z3Dk-B6tM'
     ];
     
-    // Add Google Photos URL
     const googlePhotosUrl = 'https://photos.app.goo.gl/PXSHYAWUYip4Uwfi9';
     
     const aptitudeUrls = allYoutubeUrls;
     const englishUrls = [
-      'https://www.youtube.com/watch?v=Z9CWHZfSHyI',
-      'https://www.youtube.com/watch?v=9_J3NfESEbs',
-      'https://www.youtube.com/watch?v=Q6d0PaPB8ww',
-      'https://www.youtube.com/watch?v=rOjb8QvuQ2s',
-      'https://www.youtube.com/watch?v=okVMuUua5AE',
-      'https://www.youtube.com/watch?v=ya5V4g5XYb4',
-      'https://www.youtube.com/watch?v=tgc4zxv92co',
-      'https://www.youtube.com/watch?v=2BkrbyQ8ZrE',
+      'https://www.youtube.com/watch?v=PqaPr0dAwyo',
+      'https://www.youtube.com/watch?v=9HogWXy5y90',
+      'https://www.youtube.com/watch?v=C9KFy5czsWY',
+      'https://www.youtube.com/watch?v=7E_FRY_8Vvc',
+      'https://www.youtube.com/watch?v=kO2Haju7k9U',
+      'https://www.youtube.com/watch?v=11RUUZBbG_8',
+      'https://www.youtube.com/watch?v=b36YRTv4684',
+      'https://www.youtube.com/watch?v=Dy8B-2Bcx7U',
+      'https://www.youtube.com/watch?v=IGd4Robx0O0',
+      'https://www.youtube.com/watch?v=7Itqz0egSgg',
+      'https://www.youtube.com/watch?v=cPYl9IMwV4s',
+      'https://www.youtube.com/watch?v=TduqEEgBRHk',
+      'https://www.youtube.com/watch?v=fggZusWOFhk',
+      'https://www.youtube.com/watch?v=icgwNTcrPyA',
+      'https://www.youtube.com/watch?v=IYBy3wQd5M4',
+      'https://www.youtube.com/watch?v=YNbL4kebekM',
+      'https://www.youtube.com/watch?v=vGxWpd1OfoA',
+      'https://www.youtube.com/watch?v=pMCdTONcIDI',
+      'https://www.youtube.com/watch?v=xWLZ2l0UA2s',
+      'https://www.youtube.com/watch?v=7acbD2qHN4Y',
+      'https://www.youtube.com/watch?v=MwuV10B-y8E',
+      'https://www.youtube.com/watch?v=9hrgZBSNWQk',
+      'https://www.youtube.com/watch?v=8ea8ezvtGRY',
+      'https://www.youtube.com/watch?v=k7HIXb5EryM',
+      'https://www.youtube.com/watch?v=His7C-X-eOU',
+      'https://www.youtube.com/watch?v=7Gg21I3MNvY',
+      'https://www.youtube.com/watch?v=EmxK78_dKwM',
+      'https://www.youtube.com/watch?v=dsY9CvVygVs',
+      'https://www.youtube.com/watch?v=NcLNEOu8rmY',
+      'https://www.youtube.com/watch?v=DizNfZpWe78',
+      'https://www.youtube.com/watch?v=eADp0FupyQM',
+      'https://www.youtube.com/watch?v=Hu-v0WIZ0fg',
+      'https://www.youtube.com/watch?v=B09xiHgWpEc',
+      'https://www.youtube.com/watch?v=3vO2R526zgA',
+      'https://www.youtube.com/watch?v=NbaKwSYeYgs',
+      'https://www.youtube.com/watch?v=HpCYjSwouE4',
+      'https://www.youtube.com/watch?v=oDjjeCK94KQ',
+      'https://www.youtube.com/watch?v=4bQffcaMX0A',
+      'https://www.youtube.com/watch?v=xaV7Wx-71Dc'
     ];
     
-    // Titles for reasoning videos
     const reasoningTitles = [
       'Logical Reasoning for Banking Exams - Introduction',
       'Syllogism Shortcuts and Tricks',
@@ -415,7 +442,6 @@ export const importSampleVideos = () => {
       'Last Minute Reasoning Tips'
     ];
     
-    // For aptitude and english, keep existing titles
     const aptitudeTitles = [
       'Bank Exam Number Series Tricks',
       'Quantitative Aptitude Shortcut Methods',
@@ -438,12 +464,10 @@ export const importSampleVideos = () => {
       'Reading Comprehension Strategies',
     ];
     
-    // Descriptions for reasoning videos - simplified for brevity
     const reasoningDescriptions = reasoningTitles.map(title => 
       `Comprehensive guide on ${title.toLowerCase()} for banking exams. Learn key concepts, shortcuts, and practice with example questions.`
     );
     
-    // For aptitude and english, keep existing descriptions
     const aptitudeDescriptions = [
       'Learn advanced techniques for solving number series questions quickly.',
       'Shortcut methods to solve quantitative aptitude problems in less time.',
@@ -466,7 +490,6 @@ export const importSampleVideos = () => {
       'Strategies to tackle reading comprehension passages effectively.',
     ];
     
-    // Create sample aptitude videos
     const aptitudeVideos: Video[] = aptitudeUrls.map((url, index) => ({
       id: `aptitude-${index + 1}`,
       title: aptitudeTitles[index] || `Aptitude Video ${index + 1}`,
@@ -481,7 +504,6 @@ export const importSampleVideos = () => {
       playlists: []
     }));
     
-    // Create sample reasoning videos
     const reasoningVideos: Video[] = reasoningUrls.map((url, index) => ({
       id: `reasoning-${index + 1}`,
       title: reasoningTitles[index] || `Reasoning Video ${index + 1}`,
@@ -496,7 +518,6 @@ export const importSampleVideos = () => {
       playlists: []
     }));
     
-    // Create sample english videos
     const englishVideos: Video[] = englishUrls.map((url, index) => ({
       id: `english-${index + 1}`,
       title: englishTitles[index] || `English Video ${index + 1}`,
@@ -511,7 +532,6 @@ export const importSampleVideos = () => {
       playlists: []
     }));
     
-    // Add Google Photos collection
     const googlePhotosVideo: Video = {
       id: 'google-photos-1',
       title: 'Banking Concepts Photo Collection',
@@ -525,7 +545,6 @@ export const importSampleVideos = () => {
       playlists: []
     };
     
-    // Combine all videos
     const sampleVideos: Video[] = [
       ...aptitudeVideos,
       ...reasoningVideos,
@@ -535,7 +554,6 @@ export const importSampleVideos = () => {
     
     saveVideos(sampleVideos);
     
-    // Create a few sample playlists
     const samplePlaylists: Playlist[] = [
       {
         id: 'playlist-1',
