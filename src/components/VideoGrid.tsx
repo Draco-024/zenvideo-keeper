@@ -3,10 +3,10 @@ import { Video, ViewMode } from '../types/video';
 import { Card } from './ui/card';
 import { motion, AnimatePresence } from 'framer-motion';
 import { formatDistanceToNow } from 'date-fns';
-import { Star, Edit, Trash, ExternalLink, Share2, FolderPlus } from 'lucide-react';
+import { Star, Edit, Trash, ExternalLink, Play } from 'lucide-react';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
-import { getThumbnailUrl } from '@/utils/storage';
+import { useMediaQuery } from '@/hooks/use-media-query';
 
 interface VideoGridProps {
   videos: Video[];
@@ -19,6 +19,8 @@ interface VideoGridProps {
 }
 
 export const VideoGrid = ({ videos, viewMode, onDelete, onEdit, onFavorite, onView, showBannerInListView = false }: VideoGridProps) => {
+  const isMobile = useMediaQuery("(max-width: 640px)");
+  
   const getYouTubeId = (url: string) => {
     const match = url.match(/[?&]v=([^&]+)/);
     return match ? match[1] : '';
@@ -38,9 +40,9 @@ export const VideoGrid = ({ videos, viewMode, onDelete, onEdit, onFavorite, onVi
               whileHover={{ y: -5 }}
               className="h-full"
             >
-              <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 h-full flex flex-col">
+              <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 h-full flex flex-col rounded-xl">
                 <div className="relative cursor-pointer" onClick={() => onView(video)}>
-                  <div className="relative aspect-video bg-gray-900">
+                  <div className="relative aspect-video bg-gray-900 rounded-t-xl">
                     {video.videoType === 'googlephotos' ? (
                       <div className="absolute inset-0 flex items-center justify-center">
                         <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -61,15 +63,13 @@ export const VideoGrid = ({ videos, viewMode, onDelete, onEdit, onFavorite, onVi
                     )}
                     <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
                       <div className="w-16 h-16 rounded-full bg-black/60 flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
-                          <polygon points="5 3 19 12 5 21 5 3" fill="white" />
-                        </svg>
+                        <Play className="h-6 w-6 text-white" fill="white" />
                       </div>
                     </div>
                   </div>
                   {video.favorite && (
                     <div className="absolute top-2 right-2">
-                      <Badge variant="secondary" className="bg-yellow-500/80 text-white">
+                      <Badge variant="secondary" className="bg-yellow-500/80 text-white rounded-full">
                         <Star className="h-3 w-3 mr-1 fill-white" />
                         Favorite
                       </Badge>
@@ -85,7 +85,7 @@ export const VideoGrid = ({ videos, viewMode, onDelete, onEdit, onFavorite, onVi
                   </h3>
                   <div className="mt-auto">
                     <div className="flex justify-between items-center mt-2">
-                      <Badge variant="outline" className="capitalize">
+                      <Badge variant="outline" className="capitalize rounded-full">
                         {video.category}
                       </Badge>
                       <span className="text-xs text-muted-foreground">
@@ -166,45 +166,45 @@ export const VideoGrid = ({ videos, viewMode, onDelete, onEdit, onFavorite, onVi
             exit={{ opacity: 0, x: -100 }}
             transition={{ duration: 0.3, delay: index * 0.05 }}
           >
-            <Card className="overflow-hidden p-3 sm:p-4 hover:shadow-md transition-shadow duration-300">
-              <div className="flex flex-col sm:flex-row gap-4">
-                <div 
-                  className="relative w-full sm:w-48 aspect-video rounded-md overflow-hidden cursor-pointer flex-shrink-0"
-                  onClick={() => onView(video)}
-                >
-                  {video.videoType === 'googlephotos' ? (
-                    <div className="absolute inset-0 flex items-center justify-center bg-gray-800">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
-                        <path d="M8 2v20" />
-                        <path d="M16 2v20" />
-                        <path d="M2 8h20" />
-                        <path d="M2 16h20" />
-                      </svg>
+            <Card className="overflow-hidden p-3 sm:p-4 hover:shadow-md transition-shadow duration-300 rounded-xl">
+              <div className="flex flex-col sm:flex-row gap-4 list-view-item">
+                {!isMobile && (
+                  <div 
+                    className="relative w-full sm:w-48 aspect-video rounded-xl overflow-hidden cursor-pointer flex-shrink-0 thumbnail"
+                    onClick={() => onView(video)}
+                  >
+                    {video.videoType === 'googlephotos' ? (
+                      <div className="absolute inset-0 flex items-center justify-center bg-gray-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+                          <path d="M8 2v20" />
+                          <path d="M16 2v20" />
+                          <path d="M2 8h20" />
+                          <path d="M2 16h20" />
+                        </svg>
+                      </div>
+                    ) : (
+                      <img
+                        src={`https://img.youtube.com/vi/${getYouTubeId(video.url)}/mqdefault.jpg`}
+                        alt={video.title}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                    )}
+                    <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
+                      <div className="w-12 h-12 rounded-full bg-black/60 flex items-center justify-center">
+                        <Play className="h-5 w-5 text-white" fill="white" />
+                      </div>
                     </div>
-                  ) : (
-                    <img
-                      src={`https://img.youtube.com/vi/${getYouTubeId(video.url)}/mqdefault.jpg`}
-                      alt={video.title}
-                      className="w-full h-full object-cover"
-                      loading="lazy"
-                    />
-                  )}
-                  <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
-                    <div className="w-12 h-12 rounded-full bg-black/60 flex items-center justify-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
-                        <polygon points="5 3 19 12 5 21 5 3" fill="white" />
-                      </svg>
-                    </div>
+                    {video.favorite && showBannerInListView && (
+                      <div className="absolute top-2 right-2">
+                        <Badge variant="secondary" className="bg-yellow-500/80 text-white rounded-full">
+                          <Star className="h-3 w-3 mr-1 fill-white" />
+                        </Badge>
+                      </div>
+                    )}
                   </div>
-                  {video.favorite && showBannerInListView && (
-                    <div className="absolute top-2 right-2">
-                      <Badge variant="secondary" className="bg-yellow-500/80 text-white">
-                        <Star className="h-3 w-3 mr-1 fill-white" />
-                      </Badge>
-                    </div>
-                  )}
-                </div>
+                )}
                 <div className="flex-1 flex flex-col">
                   <div className="flex-1">
                     <div className="flex items-start justify-between gap-2">
@@ -215,11 +215,11 @@ export const VideoGrid = ({ videos, viewMode, onDelete, onEdit, onFavorite, onVi
                         {video.title}
                       </h3>
                       <div className="flex-shrink-0 flex items-center gap-1">
-                        <Badge variant="outline" className="capitalize">
+                        <Badge variant="outline" className="capitalize rounded-full">
                           {video.category}
                         </Badge>
                         {video.favorite && !showBannerInListView && (
-                          <Badge variant="secondary" className="bg-yellow-500/80 text-white">
+                          <Badge variant="secondary" className="bg-yellow-500/80 text-white rounded-full">
                             <Star className="h-3 w-3 fill-white" />
                           </Badge>
                         )}
@@ -233,6 +233,14 @@ export const VideoGrid = ({ videos, viewMode, onDelete, onEdit, onFavorite, onVi
                     </span>
                   </div>
                   <div className="flex justify-end mt-2 space-x-1">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onView(video)}
+                      className="mr-auto"
+                    >
+                      <Play className="h-4 w-4 mr-1" /> Play
+                    </Button>
                     <Button
                       variant="ghost"
                       size="icon"
