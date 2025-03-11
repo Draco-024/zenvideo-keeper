@@ -1,3 +1,4 @@
+
 import { Video, Playlist, Comment } from '../types/video';
 
 const STORAGE_KEY = 'bankzen_videos';
@@ -156,6 +157,76 @@ export const getThumbnailUrl = (video: Pick<Video, 'url' | 'videoType'>): string
   }
   const youtubeId = getYouTubeIdFromUrl(video.url);
   return `https://img.youtube.com/vi/${youtubeId}/mqdefault.jpg`;
+};
+
+// Playlist Management Functions
+export const getPlaylists = (): Playlist[] => {
+  const playlists = localStorage.getItem(PLAYLIST_KEY);
+  return playlists ? JSON.parse(playlists) : [];
+};
+
+export const savePlaylists = (playlists: Playlist[]) => {
+  localStorage.setItem(PLAYLIST_KEY, JSON.stringify(playlists));
+};
+
+export const getPlaylistById = (id: string): Playlist | null => {
+  const playlists = getPlaylists();
+  return playlists.find(playlist => playlist.id === id) || null;
+};
+
+export const createPlaylist = (playlist: Playlist) => {
+  const playlists = getPlaylists();
+  playlists.push(playlist);
+  savePlaylists(playlists);
+};
+
+export const updatePlaylist = (updatedPlaylist: Playlist) => {
+  const playlists = getPlaylists();
+  const index = playlists.findIndex((p) => p.id === updatedPlaylist.id);
+  if (index !== -1) {
+    playlists[index] = updatedPlaylist;
+    savePlaylists(playlists);
+  }
+};
+
+export const deletePlaylist = (id: string) => {
+  const playlists = getPlaylists();
+  const filteredPlaylists = playlists.filter((p) => p.id !== id);
+  savePlaylists(filteredPlaylists);
+};
+
+export const addVideoToPlaylist = (playlistId: string, videoId: string) => {
+  const playlist = getPlaylistById(playlistId);
+  if (playlist && !playlist.videoIds.includes(videoId)) {
+    const updatedPlaylist = {
+      ...playlist,
+      videoIds: [...playlist.videoIds, videoId]
+    };
+    updatePlaylist(updatedPlaylist);
+    return updatedPlaylist;
+  }
+  return null;
+};
+
+export const removeVideoFromPlaylist = (playlistId: string, videoId: string) => {
+  const playlist = getPlaylistById(playlistId);
+  if (playlist) {
+    const updatedPlaylist = {
+      ...playlist,
+      videoIds: playlist.videoIds.filter(id => id !== videoId)
+    };
+    updatePlaylist(updatedPlaylist);
+    return updatedPlaylist;
+  }
+  return null;
+};
+
+export const getVideosInPlaylist = (playlistId: string): Video[] => {
+  const playlist = getPlaylistById(playlistId);
+  if (!playlist) return [];
+  
+  const videos = getVideos();
+  return videos.filter(video => playlist.videoIds.includes(video.id));
 };
 
 export const importSampleVideos = () => {

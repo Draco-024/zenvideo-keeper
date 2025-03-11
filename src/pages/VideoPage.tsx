@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getVideoById, updateVideo, addCommentToVideo } from '@/utils/storage';
-import { Video } from '@/types/video';
+import { Video, Comment } from '@/types/video';
 import { motion } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
 import { EditVideoDialog } from '@/components/EditVideoDialog';
@@ -85,11 +85,12 @@ const VideoPage = () => {
     }
   };
 
-  const handleAddComment = (commentData: Omit<Comment, 'id' | 'createdAt'>) => {
-    const newComment = {
-      ...commentData,
+  const handleAddComment = (commentText: Omit<Comment, 'id' | 'createdAt'>) => {
+    const newComment: Comment = {
       id: `comment-${Date.now()}`,
-      createdAt: Date.now()
+      createdAt: Date.now(),
+      text: commentText.text,
+      username: commentText.username
     };
     
     const updatedVideo = addCommentToVideo(video.id, newComment);
