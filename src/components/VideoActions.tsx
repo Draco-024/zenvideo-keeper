@@ -1,10 +1,12 @@
 
-import { Star, StarOff, Edit, Trash, ExternalLink, Share2, FolderPlus, Bookmark } from 'lucide-react';
+import { Star, StarOff, Edit, Trash, ExternalLink, Share2, FolderPlus, Bookmark, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Video } from '@/types/video';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { DownloadDialog } from './DownloadDialog';
 
 interface VideoActionsProps {
   video: Video;
@@ -25,6 +27,9 @@ export const VideoActions = ({
 }: VideoActionsProps) => {
   const isMobile = useMediaQuery("(max-width: 640px)");
   const navigate = useNavigate();
+  const [isDownloadDialogOpen, setIsDownloadDialogOpen] = useState(false);
+
+  const isYouTubeVideo = video.videoType === 'youtube';
 
   return (
     <div className="flex flex-wrap gap-2 video-actions justify-end">
@@ -55,6 +60,17 @@ export const VideoActions = ({
       >
         <FolderPlus className="h-4 w-4" />
       </Button>
+      
+      {isYouTubeVideo && (
+        <Button 
+          variant="outline" 
+          size="icon"
+          onClick={() => setIsDownloadDialogOpen(true)}
+          title="Download video"
+        >
+          <Download className="h-4 w-4" />
+        </Button>
+      )}
       
       <Button 
         variant="outline" 
@@ -103,6 +119,15 @@ export const VideoActions = ({
         <Bookmark className="h-4 w-4 mr-1" />
         {!isMobile && "Favorites"}
       </Button>
+
+      {isDownloadDialogOpen && (
+        <DownloadDialog
+          open={isDownloadDialogOpen}
+          onClose={() => setIsDownloadDialogOpen(false)}
+          videoUrl={video.url}
+          videoTitle={video.title}
+        />
+      )}
     </div>
   );
 };

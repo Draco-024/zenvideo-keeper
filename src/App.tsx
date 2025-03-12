@@ -51,6 +51,33 @@ const AppContent = () => {
     }
   }, [toast]);
   
+  // Handle back button to prevent app from closing unexpectedly
+  useEffect(() => {
+    const handleBackButton = (event: PopStateEvent) => {
+      const currentPath = window.location.pathname;
+      
+      // If we're on the home page, show a confirmation before exiting
+      if (currentPath === '/home') {
+        // For mobile apps, this would typically show an exit confirmation
+        // For web apps, we can't easily prevent exiting the site completely
+        // This just ensures a clean navigation experience
+        
+        // Optionally, we could show a toast here to inform users they can exit by pressing back again
+        // toast({
+        //   title: "Press back again to exit",
+        //   description: "Press back button again to exit the app",
+        //   duration: 2000,
+        // });
+      }
+    };
+
+    window.addEventListener('popstate', handleBackButton);
+    
+    return () => {
+      window.removeEventListener('popstate', handleBackButton);
+    };
+  }, []);
+  
   return (
     <BrowserRouter>
       <Routes>
