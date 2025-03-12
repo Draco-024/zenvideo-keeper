@@ -5,8 +5,8 @@ import { AddVideoDialog } from '../components/AddVideoDialog';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Video, Category, SortOption, ViewMode } from '../types/video';
-import { addVideo, getVideos, deleteVideo, updateVideo, importSampleVideos } from '../utils/storage';
-import { Plus, Search, Grid, List, SlidersHorizontal, UserRound, Image } from 'lucide-react';
+import { addVideo, getVideos, deleteVideo, updateVideo, importSampleVideos, forceRefreshVideos } from '../utils/storage';
+import { Plus, Search, Grid, List, SlidersHorizontal, UserRound, Image, Download } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
@@ -28,6 +28,8 @@ const HomePage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Force refresh videos to ensure all English videos are displayed
+    forceRefreshVideos();
     setVideos(getVideos());
   }, []);
 
@@ -226,6 +228,21 @@ const HomePage = () => {
                   className="rounded-full"
                 >
                   <List className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-full"
+                  onClick={() => {
+                    navigate('/download');
+                    toast({
+                      title: "Download Videos",
+                      description: "Search and download your favorite YouTube videos.",
+                    });
+                  }}
+                >
+                  <Download className="mr-2 h-4 w-4" />
+                  Download
                 </Button>
                 <Select value={sortOption} onValueChange={(value) => setSortOption(value as SortOption)}>
                   <SelectTrigger className="w-[140px] rounded-full">

@@ -1,108 +1,73 @@
+import { useState, useEffect } from 'react';
+import HomePage from './pages/HomePage';
+import VideoPage from './pages/VideoPage';
+import FavoritesPage from './pages/FavoritesPage';
+import PlaylistsPage from './pages/PlaylistsPage';
+import PlaylistDetailPage from './pages/PlaylistDetailPage';
+import SettingsPage from './pages/SettingsPage';
+import NotFound from './pages/NotFound';
+import DownloadPage from './pages/DownloadPage';
+import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { SplashScreen } from './components/SplashScreen';
+import './App.css';
+import { useEffectEvent } from 'framer-motion';
 
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { SplashScreen } from "./components/SplashScreen";
-import HomePage from "./pages/HomePage";
-import VideoPage from "./pages/VideoPage";
-import FavoritesPage from "./pages/FavoritesPage";
-import SettingsPage from "./pages/SettingsPage";
-import PlaylistsPage from "./pages/PlaylistsPage";
-import PlaylistDetailPage from "./pages/PlaylistDetailPage";
-import NotFound from "./pages/NotFound";
-import { useEffect } from "react";
-import { isFirstTimeNotification, markNotificationShown } from "./utils/storage";
-import { useToast } from "./hooks/use-toast";
+const BackHandler = ({ children }: { children: React.ReactNode }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
 
-// Create QueryClient instance
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 1,
-      refetchOnWindowFocus: false,
-    },
-  },
-});
-
-// Safely initialize Supabase config from window object if available
-const initSupabaseConfig = () => {
-  // Config is handled securely through environment variables or secure storage
-  // We do not directly expose sensitive keys in client-side code
-  console.log("Supabase configuration initialized");
-};
-
-// Call initialization function
-initSupabaseConfig();
-
-const AppContent = () => {
-  const { toast } = useToast();
-  
   useEffect(() => {
-    if (isFirstTimeNotification()) {
-      setTimeout(() => {
-        toast({
-          title: "Welcome to BankZen!",
-          description: "Your personal library for banking exam preparation videos.",
-        });
-        markNotificationShown();
-      }, 2000);
-    }
-  }, [toast]);
-  
-  // Handle back button to prevent app from closing unexpectedly
-  useEffect(() => {
-    const handleBackButton = (event: PopStateEvent) => {
-      const currentPath = window.location.pathname;
-      
-      // If we're on the home page, show a confirmation before exiting
-      if (currentPath === '/home') {
-        // For mobile apps, this would typically show an exit confirmation
-        // For web apps, we can't easily prevent exiting the site completely
-        // This just ensures a clean navigation experience
-        
-        // Optionally, we could show a toast here to inform users they can exit by pressing back again
-        // toast({
-        //   title: "Press back again to exit",
-        //   description: "Press back button again to exit the app",
-        //   duration: 2000,
-        // });
+    const handleBackButton = (event: HashChangeEvent) => {
+      event.preventDefault();
+      if (location.pathname !== '/') {
+        navigate(-1);
+      } else {
+        // Close the app or do something else
       }
     };
 
-    window.addEventListener('popstate', handleBackButton);
-    
+    window.addEventListener('hashchange', handleBackButton);
+
     return () => {
-      window.removeEventListener('popstate', handleBackButton);
+      window.removeEventListener('hashchange', handleBackButton);
     };
-  }, []);
-  
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<SplashScreen />} />
-        <Route path="/home" element={<HomePage />} />
-        <Route path="/video/:id" element={<VideoPage />} />
-        <Route path="/favorites" element={<FavoritesPage />} />
-        <Route path="/playlists" element={<PlaylistsPage />} />
-        <Route path="/playlist/:id" element={<PlaylistDetailPage />} />
-        <Route path="/settings" element={<SettingsPage />} />
-        <Route path="/index" element={<Navigate to="/home" replace />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </BrowserRouter>
-  );
+  }, [navigate, location]);
+
+  return <>{children}</>;
 };
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <AppContent />
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate initial loading
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <Router>
+      {loading ? (
+        <SplashScreen />
+      ) : (
+        <BackHandler>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/video/:id" element={<VideoPage />} />
+            <Route path="/favorites" element={<FavoritesPage />} />
+            <Route path="/playlists" element={<PlaylistsPage />} />
+            <Route path="/playlist/:id" element={<PlaylistDetailPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/download" element={<DownloadPage />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BackHandler>
+      )}
+    </Router>
+  );
+};
 
 export default App;

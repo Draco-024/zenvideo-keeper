@@ -1,3 +1,4 @@
+
 import { Video, Category, Playlist } from '@/types/video';
 
 const VIDEO_STORAGE_KEY = 'bankzen_videos';
@@ -27,6 +28,11 @@ export const getVideos = (): Video[] => {
   return storedVideos ? JSON.parse(storedVideos) : [];
 };
 
+export const getVideoById = (id: string): Video | undefined => {
+  const videos = getVideos();
+  return videos.find(video => video.id === id);
+};
+
 export const addVideo = (video: Video): void => {
   const videos = getVideos();
   videos.push(video);
@@ -53,16 +59,59 @@ export const clearAllVideos = (): void => {
   localStorage.removeItem(PLAYLIST_STORAGE_KEY);
 };
 
+export const addCommentToVideo = (videoId: string, comment: any): void => {
+  const video = getVideoById(videoId);
+  if (video) {
+    const updatedVideo = {
+      ...video, 
+      comments: [...(video.comments || []), {...comment, id: Date.now().toString(), createdAt: Date.now()}]
+    };
+    updateVideo(updatedVideo);
+  }
+};
+
+// Video type detection
+export const isGooglePhotosUrl = (url: string): boolean => {
+  return url.includes('photos.google.com') || url.includes('photos.app.goo.gl');
+};
+
+export const getVideoType = (url: string): 'youtube' | 'googlephotos' | 'other' => {
+  if (url.includes('youtube.com') || url.includes('youtu.be')) {
+    return 'youtube';
+  } else if (isGooglePhotosUrl(url)) {
+    return 'googlephotos';
+  } else {
+    return 'other';
+  }
+};
+
 // Playlist management functions
 export const getPlaylists = (): Playlist[] => {
   const storedPlaylists = loadFromLocalStorage(PLAYLIST_STORAGE_KEY);
   return storedPlaylists ? JSON.parse(storedPlaylists) : [];
 };
 
+export const getPlaylistById = (id: string): Playlist | undefined => {
+  const playlists = getPlaylists();
+  return playlists.find(playlist => playlist.id === id);
+};
+
 export const addPlaylist = (playlist: Playlist): void => {
   const playlists = getPlaylists();
   playlists.push(playlist);
   saveToLocalStorage(PLAYLIST_STORAGE_KEY, playlists);
+};
+
+export const createPlaylist = (name: string, description: string = ""): Playlist => {
+  const newPlaylist: Playlist = {
+    id: Date.now().toString(),
+    name,
+    description,
+    videoIds: [],
+    createdAt: Date.now()
+  };
+  addPlaylist(newPlaylist);
+  return newPlaylist;
 };
 
 export const updatePlaylist = (updatedPlaylist: Playlist): void => {
@@ -77,6 +126,38 @@ export const deletePlaylist = (id: string): void => {
   const playlists = getPlaylists();
   const updatedPlaylists = playlists.filter(playlist => playlist.id !== id);
   saveToLocalStorage(PLAYLIST_STORAGE_KEY, updatedPlaylists);
+};
+
+export const addVideoToPlaylist = (playlistId: string, videoId: string): void => {
+  const playlist = getPlaylistById(playlistId);
+  if (playlist && !playlist.videoIds.includes(videoId)) {
+    const updatedPlaylist = {
+      ...playlist,
+      videoIds: [...playlist.videoIds, videoId]
+    };
+    updatePlaylist(updatedPlaylist);
+  }
+};
+
+export const removeVideoFromPlaylist = (playlistId: string, videoId: string): void => {
+  const playlist = getPlaylistById(playlistId);
+  if (playlist) {
+    const updatedPlaylist = {
+      ...playlist,
+      videoIds: playlist.videoIds.filter(id => id !== videoId)
+    };
+    updatePlaylist(updatedPlaylist);
+  }
+};
+
+export const getVideosInPlaylist = (playlistId: string): Video[] => {
+  const playlist = getPlaylistById(playlistId);
+  if (!playlist) return [];
+  
+  const allVideos = getVideos();
+  return playlist.videoIds
+    .map(videoId => allVideos.find(video => video.id === videoId))
+    .filter((video): video is Video => video !== undefined);
 };
 
 // Storage functions for importing/exporting
@@ -842,4 +923,45 @@ export const importSampleVideos = () => {
   ];
 
   saveToLocalStorage(VIDEO_STORAGE_KEY, sampleVideos);
+};
+
+// Force refresh all videos to ensure the new english videos appear properly
+export const forceRefreshVideos = (): void => {
+  const videos = getVideos();
+  if (videos.length > 0) {
+    const englishVideos = videos.filter(v => v.category === 'english');
+    // If we have less than expected English videos, force refresh
+    if (englishVideos.length < 30) {
+      // Store any user-added videos that are not in the sample set
+      const userAddedVideos = videos.filter(v => 
+        !v.id.startsWith('1') && 
+        !v.id.startsWith('2') && 
+        !v.id.startsWith('3') && 
+        !v.id.startsWith('4') && 
+        !v.id.startsWith('5') && 
+        !v.id.startsWith('6') && 
+        !v.id.startsWith('7') && 
+        !v.id.startsWith('8') && 
+        !v.id.startsWith('9') && 
+        !v.id.startsWith('r') && 
+        !v.id.startsWith('en')
+      );
+      
+      // Clear videos and reimport samples
+      clearAllVideos();
+      importSampleVideos();
+      
+      // Re-add user videos
+      const updatedVideos = getVideos();
+      userAddedVideos.forEach(video => {
+        // Check if this video isn't already in the list
+        if (!updatedVideos.some(v => v.id === video.id)) {
+          addVideo(video);
+        }
+      });
+    }
+  } else {
+    // If no videos exist, import samples
+    importSampleVideos();
+  }
 };
