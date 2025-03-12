@@ -59,7 +59,7 @@ export const clearAllVideos = (): void => {
   localStorage.removeItem(PLAYLIST_STORAGE_KEY);
 };
 
-export const addCommentToVideo = (videoId: string, comment: any): void => {
+export const addCommentToVideo = (videoId: string, comment: any): Video | null => {
   const video = getVideoById(videoId);
   if (video) {
     const updatedVideo = {
@@ -67,7 +67,9 @@ export const addCommentToVideo = (videoId: string, comment: any): void => {
       comments: [...(video.comments || []), {...comment, id: Date.now().toString(), createdAt: Date.now()}]
     };
     updateVideo(updatedVideo);
+    return updatedVideo;
   }
+  return null;
 };
 
 // Video type detection
@@ -75,13 +77,14 @@ export const isGooglePhotosUrl = (url: string): boolean => {
   return url.includes('photos.google.com') || url.includes('photos.app.goo.gl');
 };
 
-export const getVideoType = (url: string): 'youtube' | 'googlephotos' | 'other' => {
+export const getVideoType = (url: string): 'youtube' | 'googlephotos' => {
   if (url.includes('youtube.com') || url.includes('youtu.be')) {
     return 'youtube';
   } else if (isGooglePhotosUrl(url)) {
     return 'googlephotos';
   } else {
-    return 'other';
+    // Default to YouTube for other URLs
+    return 'youtube';
   }
 };
 
@@ -452,6 +455,7 @@ export const importSampleVideos = () => {
       videoType: 'youtube',
       comments: []
     },
+    // English videos - Update with the new ones
     {
       id: 'en1',
       title: 'Most important vocabulary, phrases for Bank exams',

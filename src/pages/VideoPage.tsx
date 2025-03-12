@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getVideoById, updateVideo, addCommentToVideo } from '@/utils/storage';
@@ -33,7 +34,7 @@ const VideoPage = () => {
           description: "The requested video could not be found.",
           variant: "destructive"
         });
-        navigate('/home');
+        navigate('/');
       }
     }
   }, [id, navigate, toast]);
@@ -41,7 +42,7 @@ const VideoPage = () => {
   useEffect(() => {
     const handleBackNavigation = (e: PopStateEvent) => {
       e.preventDefault();
-      navigate('/home');
+      navigate('/');
     };
 
     window.addEventListener('popstate', handleBackNavigation);
@@ -93,11 +94,13 @@ const VideoPage = () => {
         title: "Video Deleted",
         description: "The video has been deleted successfully."
       });
-      navigate('/home');
+      navigate('/');
     }
   };
 
   const handleAddComment = (commentText: Omit<Comment, 'id' | 'createdAt'>) => {
+    if (!video || !video.id) return;
+    
     const newComment: Comment = {
       id: `comment-${Date.now()}`,
       createdAt: Date.now(),

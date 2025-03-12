@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import HomePage from './pages/HomePage';
 import VideoPage from './pages/VideoPage';
@@ -10,7 +11,6 @@ import DownloadPage from './pages/DownloadPage';
 import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { SplashScreen } from './components/SplashScreen';
 import './App.css';
-import { useEffectEvent } from 'framer-motion';
 
 const BackHandler = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();

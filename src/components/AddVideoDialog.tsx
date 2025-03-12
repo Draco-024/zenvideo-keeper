@@ -9,7 +9,7 @@ import { Textarea } from "./ui/textarea";
 import { motion } from "framer-motion";
 import { getYouTubeId } from "@/utils/helpers";
 import { AlertCircle, ExternalLink } from "lucide-react";
-import { isGooglePhotosUrl, getVideoType } from "@/utils/storage";
+import { isGooglePhotosUrl } from "@/utils/storage";
 
 interface AddVideoDialogProps {
   open: boolean;
@@ -47,7 +47,10 @@ export const AddVideoDialog = ({ open, onClose, onAdd }: AddVideoDialogProps) =>
     
     if (!isValidUrl) return;
     
-    const videoType = getVideoType(url);
+    const videoType: 'youtube' | 'googlephotos' = url.includes('youtube.com') || url.includes('youtu.be') 
+      ? 'youtube' 
+      : 'googlephotos';
+      
     const thumbnailUrl = videoType === 'youtube'
       ? `https://img.youtube.com/vi/${getYouTubeId(url)}/mqdefault.jpg`
       : undefined;

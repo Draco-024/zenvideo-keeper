@@ -1,10 +1,9 @@
 
-import { Star, StarOff, Edit, Trash, ExternalLink, Share2, FolderPlus, Bookmark, Download } from 'lucide-react';
+import { Star, StarOff, Edit, Trash, ExternalLink, Share2, FolderPlus, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Video } from '@/types/video';
 import { useMediaQuery } from '@/hooks/use-media-query';
-import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { DownloadDialog } from './DownloadDialog';
 
@@ -26,7 +25,6 @@ export const VideoActions = ({
   onDeleteVideo
 }: VideoActionsProps) => {
   const isMobile = useMediaQuery("(max-width: 640px)");
-  const navigate = useNavigate();
   const [isDownloadDialogOpen, setIsDownloadDialogOpen] = useState(false);
 
   const isYouTubeVideo = video.videoType === 'youtube';
@@ -104,20 +102,10 @@ export const VideoActions = ({
         </AlertDialogContent>
       </AlertDialog>
       
-      <Button variant="outline" size="icon" asChild title="Open in original site">
+      <Button variant="outline" size="icon" asChild title="View on YouTube">
         <a href={video.url} target="_blank" rel="noopener noreferrer">
           <ExternalLink className="h-4 w-4" />
         </a>
-      </Button>
-      
-      <Button 
-        variant="outline" 
-        size="sm"
-        onClick={() => navigate('/favorites')}
-        title="Go to favorites"
-      >
-        <Bookmark className="h-4 w-4 mr-1" />
-        {!isMobile && "Favorites"}
       </Button>
 
       {isDownloadDialogOpen && (
