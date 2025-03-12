@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { VideoGrid } from '../components/VideoGrid';
 import { AddVideoDialog } from '../components/AddVideoDialog';
@@ -28,14 +27,11 @@ const HomePage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Force refresh videos to ensure all English videos are displayed
     forceRefreshVideos();
     setVideos(getVideos());
   }, []);
 
-  // Track watched videos count for profile
   useEffect(() => {
-    // Set initial profile stats if not already set
     if (!localStorage.getItem("videosWatched")) {
       localStorage.setItem("videosWatched", "0");
     }
@@ -55,7 +51,6 @@ const HomePage = () => {
   }, [videos]);
 
   useEffect(() => {
-    // Import sample videos if there are none
     if (videos.length === 0) {
       importSampleVideos();
       setVideos(getVideos());
@@ -103,7 +98,6 @@ const HomePage = () => {
     updateVideo(updatedVideo);
     setVideos(getVideos());
     
-    // Update favorite count for profile
     const favorites = getVideos().filter(v => v.favorite).length;
     localStorage.setItem("favoriteVideos", favorites.toString());
   };
@@ -112,11 +106,9 @@ const HomePage = () => {
     const updatedVideo = { ...video, lastWatched: Date.now() };
     updateVideo(updatedVideo);
     
-    // Update watched videos count for profile
     const watched = parseInt(localStorage.getItem("videosWatched") || "0") + 1;
     localStorage.setItem("videosWatched", watched.toString());
     
-    // Update account level based on watched videos
     if (watched >= 20) {
       localStorage.setItem("accountLevel", "Expert");
     } else if (watched >= 10) {

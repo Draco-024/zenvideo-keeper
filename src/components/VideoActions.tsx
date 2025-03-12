@@ -1,5 +1,5 @@
 
-import { Star, StarOff, Edit, Trash, ExternalLink, Share2, FolderPlus, Download } from 'lucide-react';
+import { Star, StarOff, Edit, Trash, ExternalLink, Share2, FolderPlus, Download, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Video } from '@/types/video';
@@ -13,6 +13,7 @@ interface VideoActionsProps {
   onOpenEditDialog: () => void;
   onOpenShareDialog: () => void;
   onOpenPlaylistDialog: () => void;
+  onOpenCategoryDialog: () => void;
   onDeleteVideo: () => void;
 }
 
@@ -22,6 +23,7 @@ export const VideoActions = ({
   onOpenEditDialog,
   onOpenShareDialog,
   onOpenPlaylistDialog,
+  onOpenCategoryDialog,
   onDeleteVideo
 }: VideoActionsProps) => {
   const isMobile = useMediaQuery("(max-width: 640px)");
@@ -39,6 +41,15 @@ export const VideoActions = ({
         title={video.favorite ? "Remove from favorites" : "Add to favorites"}
       >
         {video.favorite ? <Star className="h-4 w-4 fill-yellow-500" /> : <StarOff className="h-4 w-4" />}
+      </Button>
+      
+      <Button 
+        variant="outline" 
+        size="icon"
+        onClick={onOpenCategoryDialog}
+        title="Change category"
+      >
+        <BookOpen className="h-4 w-4" />
       </Button>
       
       <Button 

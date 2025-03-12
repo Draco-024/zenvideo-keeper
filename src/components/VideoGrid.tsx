@@ -1,14 +1,10 @@
 
-import { Video, ViewMode } from '../types/video';
-import { Card } from './ui/card';
-import { motion, AnimatePresence } from 'framer-motion';
-import { formatDistanceToNow } from 'date-fns';
-import { Star, Edit, Trash, ExternalLink, Play } from 'lucide-react';
-import { Button } from './ui/button';
-import { Badge } from './ui/badge';
-import { useMediaQuery } from '@/hooks/use-media-query';
+import { Video, ViewMode } from '@/types/video';
+import { VideoCard } from './VideoCard';
+import { motion } from 'framer-motion';
+import { VideoListItem } from './VideoListItem';
 
-interface VideoGridProps {
+export interface VideoGridProps {
   videos: Video[];
   viewMode: ViewMode;
   onDelete: (id: string) => void;
@@ -18,284 +14,76 @@ interface VideoGridProps {
   showBannerInListView?: boolean;
 }
 
-export const VideoGrid = ({ videos, viewMode, onDelete, onEdit, onFavorite, onView, showBannerInListView = false }: VideoGridProps) => {
-  const isMobile = useMediaQuery("(max-width: 640px)");
+export const VideoGrid = ({ 
+  videos, 
+  viewMode, 
+  onDelete, 
+  onEdit, 
+  onFavorite, 
+  onView,
+  showBannerInListView = true
+}: VideoGridProps) => {
+  const handleFavoriteToggle = (video: Video) => {
+    onFavorite(video);
+  };
+
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.05
+      }
+    }
+  };
   
-  const getYouTubeId = (url: string) => {
-    const match = url.match(/[?&]v=([^&]+)/);
-    return match ? match[1] : '';
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 }
   };
 
   if (viewMode === 'grid') {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        <AnimatePresence>
-          {videos.map((video, index) => (
-            <motion.div
-              key={video.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.3, delay: index * 0.05 }}
-              whileHover={{ y: -5 }}
-              className="h-full"
-            >
-              <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 h-full flex flex-col rounded-xl">
-                <div className="relative cursor-pointer" onClick={() => onView(video)}>
-                  <div className="relative aspect-video bg-gray-900 rounded-t-xl">
-                    {video.videoType === 'googlephotos' ? (
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
-                          <path d="M8 2v20" />
-                          <path d="M16 2v20" />
-                          <path d="M2 8h20" />
-                          <path d="M2 16h20" />
-                        </svg>
-                      </div>
-                    ) : (
-                      <img
-                        src={`https://img.youtube.com/vi/${getYouTubeId(video.url)}/mqdefault.jpg`}
-                        alt={video.title}
-                        className="absolute w-full h-full object-cover"
-                        loading="lazy"
-                      />
-                    )}
-                    <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
-                      <div className="w-16 h-16 rounded-full bg-black/60 flex items-center justify-center">
-                        <Play className="h-6 w-6 text-white" fill="white" />
-                      </div>
-                    </div>
-                  </div>
-                  {video.favorite && (
-                    <div className="absolute top-2 right-2">
-                      <Badge variant="secondary" className="bg-yellow-500/80 text-white rounded-full">
-                        <Star className="h-3 w-3 mr-1 fill-white" />
-                        Favorite
-                      </Badge>
-                    </div>
-                  )}
-                </div>
-                <div className="p-4 flex-1 flex flex-col">
-                  <h3 
-                    className="font-semibold mb-2 line-clamp-2 hover:text-primary/80 transition-colors cursor-pointer"
-                    onClick={() => onView(video)}
-                  >
-                    {video.title}
-                  </h3>
-                  <div className="mt-auto">
-                    <div className="flex justify-between items-center mt-2">
-                      <Badge variant="outline" className="capitalize rounded-full">
-                        {video.category}
-                      </Badge>
-                      <span className="text-xs text-muted-foreground">
-                        {formatDistanceToNow(video.createdAt, { addSuffix: true })}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center mt-4">
-                      <div className="flex space-x-1">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className={`h-8 w-8 ${video.favorite ? 'text-yellow-500' : ''}`}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onFavorite(video);
-                          }}
-                          title={video.favorite ? "Remove from favorites" : "Add to favorites"}
-                        >
-                          <Star className={`h-4 w-4 ${video.favorite ? 'fill-yellow-500' : ''}`} />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onEdit(video);
-                          }}
-                          title="Edit video"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-red-500 hover:text-red-600"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onDelete(video.id);
-                          }}
-                          title="Delete video"
-                        >
-                          <Trash className="h-4 w-4" />
-                        </Button>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={(e) => e.stopPropagation()}
-                        asChild
-                        title="Open original link"
-                      >
-                        <a href={video.url} target="_blank" rel="noopener noreferrer">
-                          <ExternalLink className="h-4 w-4" />
-                        </a>
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      </div>
+      <motion.div 
+        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+        variants={container}
+        initial="hidden"
+        animate="show"
+      >
+        {videos.map((video) => (
+          <motion.div key={video.id} variants={item}>
+            <VideoCard 
+              video={video} 
+              onView={onView} 
+              onFavorite={handleFavoriteToggle}
+              onChangeCategory={onEdit}
+            />
+          </motion.div>
+        ))}
+      </motion.div>
     );
   }
 
   // List view
   return (
-    <div className="space-y-3">
-      <AnimatePresence>
-        {videos.map((video, index) => (
-          <motion.div
-            key={video.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, x: -100 }}
-            transition={{ duration: 0.3, delay: index * 0.05 }}
-          >
-            <Card className="overflow-hidden p-3 sm:p-4 hover:shadow-md transition-shadow duration-300 rounded-xl">
-              <div className="flex flex-col sm:flex-row gap-4 list-view-item">
-                {!isMobile && (
-                  <div 
-                    className="relative w-full sm:w-48 aspect-video rounded-xl overflow-hidden cursor-pointer flex-shrink-0 thumbnail"
-                    onClick={() => onView(video)}
-                  >
-                    {video.videoType === 'googlephotos' ? (
-                      <div className="absolute inset-0 flex items-center justify-center bg-gray-800">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
-                          <path d="M8 2v20" />
-                          <path d="M16 2v20" />
-                          <path d="M2 8h20" />
-                          <path d="M2 16h20" />
-                        </svg>
-                      </div>
-                    ) : (
-                      <img
-                        src={`https://img.youtube.com/vi/${getYouTubeId(video.url)}/mqdefault.jpg`}
-                        alt={video.title}
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                      />
-                    )}
-                    <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
-                      <div className="w-12 h-12 rounded-full bg-black/60 flex items-center justify-center">
-                        <Play className="h-5 w-5 text-white" fill="white" />
-                      </div>
-                    </div>
-                    {video.favorite && showBannerInListView && (
-                      <div className="absolute top-2 right-2">
-                        <Badge variant="secondary" className="bg-yellow-500/80 text-white rounded-full">
-                          <Star className="h-3 w-3 mr-1 fill-white" />
-                        </Badge>
-                      </div>
-                    )}
-                  </div>
-                )}
-                <div className="flex-1 flex flex-col">
-                  <div className="flex-1">
-                    <div className="flex items-start justify-between gap-2">
-                      <h3 
-                        className="font-semibold text-base sm:text-lg line-clamp-1 cursor-pointer hover:text-primary/80 transition-colors"
-                        onClick={() => onView(video)}
-                      >
-                        {video.title}
-                      </h3>
-                      <div className="flex-shrink-0 flex items-center gap-1">
-                        <Badge variant="outline" className="capitalize rounded-full">
-                          {video.category}
-                        </Badge>
-                        {video.favorite && !showBannerInListView && (
-                          <Badge variant="secondary" className="bg-yellow-500/80 text-white rounded-full">
-                            <Star className="h-3 w-3 fill-white" />
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                    <p className="text-muted-foreground text-sm my-1 line-clamp-1">
-                      {video.description || "No description available"}
-                    </p>
-                    <span className="text-xs text-muted-foreground">
-                      {formatDistanceToNow(video.createdAt, { addSuffix: true })}
-                    </span>
-                  </div>
-                  <div className="flex justify-end mt-2 space-x-1">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => onView(video)}
-                      className="mr-auto"
-                    >
-                      <Play className="h-4 w-4 mr-1" /> Play
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className={`h-8 w-8 ${video.favorite ? 'text-yellow-500' : ''}`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onFavorite(video);
-                      }}
-                      title={video.favorite ? "Remove from favorites" : "Add to favorites"}
-                    >
-                      <Star className={`h-4 w-4 ${video.favorite ? 'fill-yellow-500' : ''}`} />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onEdit(video);
-                      }}
-                      title="Edit video"
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-red-500 hover:text-red-600"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onDelete(video.id);
-                      }}
-                      title="Delete video"
-                    >
-                      <Trash className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8"
-                      onClick={(e) => e.stopPropagation()}
-                      asChild
-                      title="Open original link"
-                    >
-                      <a href={video.url} target="_blank" rel="noopener noreferrer">
-                        <ExternalLink className="h-4 w-4" />
-                      </a>
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </Card>
-          </motion.div>
-        ))}
-      </AnimatePresence>
-    </div>
+    <motion.div 
+      className="space-y-2"
+      variants={container}
+      initial="hidden"
+      animate="show"
+    >
+      {videos.map((video) => (
+        <motion.div key={video.id} variants={item}>
+          <VideoListItem 
+            video={video} 
+            onView={onView} 
+            onFavorite={handleFavoriteToggle} 
+            onEdit={onEdit} 
+            onDelete={() => onDelete(video.id)}
+            showBanner={showBannerInListView}
+          />
+        </motion.div>
+      ))}
+    </motion.div>
   );
 };

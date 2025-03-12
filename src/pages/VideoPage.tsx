@@ -8,6 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 import { EditVideoDialog } from '@/components/EditVideoDialog';
 import { ShareDialog } from '@/components/ShareDialog';
 import { PlaylistDialog } from '@/components/PlaylistDialog';
+import { ChangeCategoryDialog } from '@/components/ChangeCategoryDialog';
 import { CommentSection } from '@/components/CommentSection';
 import { VideoHeader } from '@/components/VideoHeader';
 import { VideoActions } from '@/components/VideoActions';
@@ -20,6 +21,7 @@ const VideoPage = () => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   const [isPlaylistDialogOpen, setIsPlaylistDialogOpen] = useState(false);
+  const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -134,6 +136,7 @@ const VideoPage = () => {
           onOpenEditDialog={() => setIsEditDialogOpen(true)}
           onOpenShareDialog={() => setIsShareDialogOpen(true)}
           onOpenPlaylistDialog={() => setIsPlaylistDialogOpen(true)}
+          onOpenCategoryDialog={() => setIsCategoryDialogOpen(true)}
           onDeleteVideo={handleDeleteVideo}
         />
         
@@ -170,6 +173,13 @@ const VideoPage = () => {
         open={isPlaylistDialogOpen}
         onClose={() => setIsPlaylistDialogOpen(false)}
         video={video}
+      />
+      
+      <ChangeCategoryDialog
+        open={isCategoryDialogOpen}
+        onClose={() => setIsCategoryDialogOpen(false)}
+        video={video}
+        onCategoryChange={handleUpdateVideo}
       />
     </div>
   );
