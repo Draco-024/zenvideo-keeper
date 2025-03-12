@@ -371,7 +371,6 @@ export const importSampleVideos = () => {
       videoType: 'youtube',
       comments: []
     },
-    // English videos - Update with the new ones
     {
       id: 'en1',
       title: 'Most important vocabulary, phrases for Bank exams',
@@ -745,3 +744,102 @@ export const importSampleVideos = () => {
       comments: []
     },
     {
+      id: 'en32',
+      title: 'Master Pronouns for Bank Exams',
+      url: 'https://www.youtube.com/watch?v=Hu-v0WIZ0fg',
+      category: 'english',
+      thumbnail: 'https://img.youtube.com/vi/Hu-v0WIZ0fg/mqdefault.jpg',
+      description: 'Mastering pronouns for bank exam questions',
+      favorite: false,
+      createdAt: Date.now() - 6900000,
+      videoType: 'youtube',
+      comments: []
+    },
+    {
+      id: 'en33',
+      title: 'Verb Tenses Simplified',
+      url: 'https://www.youtube.com/watch?v=B09xiHgWpEc',
+      category: 'english',
+      thumbnail: 'https://img.youtube.com/vi/B09xiHgWpEc/mqdefault.jpg',
+      description: 'Simple explanation of verb tenses for banking exams',
+      favorite: false,
+      createdAt: Date.now() - 6800000,
+      videoType: 'youtube',
+      comments: []
+    },
+    {
+      id: 'en34',
+      title: 'Punctuation Rules for Bank Exams',
+      url: 'https://www.youtube.com/watch?v=3vO2R526zgA',
+      category: 'english',
+      thumbnail: 'https://img.youtube.com/vi/3vO2R526zgA/mqdefault.jpg',
+      description: 'Important punctuation rules for banking examinations',
+      favorite: false,
+      createdAt: Date.now() - 6700000,
+      videoType: 'youtube',
+      comments: []
+    },
+    {
+      id: 'en35',
+      title: 'Common Confusing Words in English',
+      url: 'https://www.youtube.com/watch?v=NbaKwSYeYgs',
+      category: 'english',
+      thumbnail: 'https://img.youtube.com/vi/NbaKwSYeYgs/mqdefault.jpg',
+      description: 'Commonly confused words explained for bank exams',
+      favorite: false,
+      createdAt: Date.now() - 6600000,
+      videoType: 'youtube',
+      comments: []
+    },
+    {
+      id: 'en36',
+      title: 'Grammar Shortcuts for Competitive Exams',
+      url: 'https://www.youtube.com/watch?v=HpCYjSwouE4',
+      category: 'english',
+      thumbnail: 'https://img.youtube.com/vi/HpCYjSwouE4/mqdefault.jpg',
+      description: 'Quick grammar shortcuts for competitive banking exams',
+      favorite: false,
+      createdAt: Date.now() - 6500000,
+      videoType: 'youtube',
+      comments: []
+    },
+    {
+      id: 'en37',
+      title: 'Word Usage in Bank Exams',
+      url: 'https://www.youtube.com/watch?v=oDjjeCK94KQ',
+      category: 'english',
+      thumbnail: 'https://img.youtube.com/vi/oDjjeCK94KQ/mqdefault.jpg',
+      description: 'Correct word usage for banking examinations',
+      favorite: false,
+      createdAt: Date.now() - 6400000,
+      videoType: 'youtube',
+      comments: []
+    },
+    {
+      id: 'en38',
+      title: 'Sentence Structure Analysis',
+      url: 'https://www.youtube.com/watch?v=4bQffcaMX0A',
+      category: 'english',
+      thumbnail: 'https://img.youtube.com/vi/4bQffcaMX0A/mqdefault.jpg',
+      description: 'How to analyze sentence structures for bank exams',
+      favorite: false,
+      createdAt: Date.now() - 6300000,
+      videoType: 'youtube',
+      comments: []
+    },
+    {
+      id: 'en39',
+      title: 'Advanced Grammar Techniques',
+      url: 'https://www.youtube.com/watch?v=xaV7Wx-71Dc',
+      category: 'english',
+      thumbnail: 'https://img.youtube.com/vi/xaV7Wx-71Dc/mqdefault.jpg',
+      description: 'Advanced grammar techniques for banking competitive exams',
+      favorite: false,
+      createdAt: Date.now() - 6200000,
+      videoType: 'youtube',
+      comments: []
+    }
+  ];
+
+  saveToLocalStorage(VIDEO_STORAGE_KEY, sampleVideos);
+};
