@@ -1,3 +1,4 @@
+
 import { Video, Playlist, Comment } from '../types/video';
 
 const STORAGE_KEY = 'bankzen_videos';
@@ -324,6 +325,7 @@ export const importSampleVideos = () => {
     const googlePhotosUrl = 'https://photos.app.goo.gl/PXSHYAWUYip4Uwfi9';
     
     const aptitudeUrls = allYoutubeUrls;
+    // Updated English URLs with the new list provided by the user
     const englishUrls = [
       'https://www.youtube.com/watch?v=PqaPr0dAwyo',
       'https://www.youtube.com/watch?v=9HogWXy5y90',
@@ -453,15 +455,47 @@ export const importSampleVideos = () => {
       'Simple and Compound Interest',
     ];
     
+    // Updated English titles to match the new URLs
     const englishTitles = [
       'English Grammar Rules for Bank Exams',
       'Verbal Ability Master Class',
-      'Banking Awareness Key Topics',
-      'Computer Knowledge for Banking Exams',
-      'General Knowledge Quick Review',
-      'Current Affairs for Bank Exams',
-      'Grammar Rules for Bank Exams',
-      'Reading Comprehension Strategies',
+      'Reading Comprehension Techniques',
+      'Synonyms and Antonyms for Banking',
+      'Sentence Improvement Strategies',
+      'Para Jumbles Solving Methods',
+      'Common Grammar Errors to Avoid',
+      'Cloze Test Preparation Tips',
+      'Spotting Errors in Sentences',
+      'Fill in the Blanks Strategies',
+      'Idioms and Phrases Practice',
+      'One Word Substitution Guide',
+      'Sentence Completion Techniques',
+      'Active and Passive Voice Rules',
+      'Direct and Indirect Speech',
+      'Subject-Verb Agreement in English',
+      'Tenses Overview for Bank Exams',
+      'Phrases and Clauses Explained',
+      'Reading Comprehension Practice Set',
+      'Vocabulary Building Techniques',
+      'Error Detection Methods',
+      'Banking Terminology in English',
+      'Passage Comprehension Strategies',
+      'Inference Based Questions',
+      'Critical Reasoning in English',
+      'Contextual Vocabulary Usage',
+      'Paragraph Completion Methods',
+      'Summary Writing Techniques',
+      'English Usage and Grammar Rules',
+      'Word Association Practice',
+      'High-Level Vocabulary for Banking',
+      'Grammar Rules Simplified',
+      'Sentence Rearrangement Tricks',
+      'Quick Grammar Revision',
+      'Banking Terms and Definitions',
+      'English Section Time Management',
+      'Last-Minute English Preparation',
+      'Common Mistakes in Banking English',
+      'Quick English Tips for Bank Exams'
     ];
     
     const reasoningDescriptions = reasoningTitles.map(title => 
@@ -479,15 +513,47 @@ export const importSampleVideos = () => {
       'Simple and compound interest problems solved with practical examples.',
     ];
     
+    // Updated English descriptions to match the new content
     const englishDescriptions = [
       'Essential grammar rules you need to know for scoring high in English section.',
       'Comprehensive guide to excel in verbal ability sections of banking exams.',
-      'Important banking awareness topics you must know for all banking exams.',
-      'Essential computer knowledge concepts tested in banking exams.',
-      'Quick review of important general knowledge topics for banking exams.',
-      'Latest current affairs that are important for upcoming banking exams.',
-      'Important grammar rules you must know for banking exam English section.',
-      'Strategies to tackle reading comprehension passages effectively.',
+      'Effective strategies to tackle reading comprehension passages in banking exams.',
+      'Master synonyms and antonyms with this comprehensive guide for banking exams.',
+      'Learn how to improve sentences with proper structure and grammar.',
+      'Techniques to solve para jumbles quickly and accurately.',
+      'Identify and avoid common grammar errors that appear in banking exams.',
+      'Step-by-step approach to solve cloze test questions effectively.',
+      'Learn how to spot errors in sentences quickly for banking exams.',
+      'Strategies to tackle fill in the blanks questions with precision.',
+      'Common idioms and phrases explained with examples for banking exams.',
+      'One word substitution guide to enhance your vocabulary for bank exams.',
+      'Techniques to complete sentences grammatically and meaningfully.',
+      'Master active and passive voice rules for banking exam questions.',
+      'Complete guide to direct and indirect speech conversion.',
+      'Important rules of subject-verb agreement for grammar questions.',
+      'Comprehensive overview of tenses for banking exam preparation.',
+      'Phrases and clauses explained with examples for better understanding.',
+      'Practice set for reading comprehension with detailed explanations.',
+      'Effective techniques to build vocabulary for banking exams.',
+      'Methods to detect errors in sentences quickly and accurately.',
+      'Important banking terminology explained in simple English.',
+      'Advanced strategies to comprehend complex passages.',
+      'How to tackle inference based questions in reading comprehension.',
+      'Critical reasoning techniques for English section of banking exams.',
+      'Learn to use vocabulary based on context for better accuracy.',
+      'Methods to complete paragraphs with coherence and logic.',
+      'Techniques for writing concise and accurate summaries.',
+      'Important English usage and grammar rules for banking exams.',
+      'Practice word associations to improve vocabulary retention.',
+      'Advanced vocabulary terms commonly used in banking sector.',
+      'Simplified explanation of complex grammar rules for quick learning.',
+      'Tricks to rearrange jumbled sentences in logical order.',
+      'Quick revision of essential grammar rules for last-minute preparation.',
+      'Important banking terms and definitions you should know.',
+      'Time management strategies for English section in banking exams.',
+      'Last-minute preparation tips for English section of banking exams.',
+      'Common mistakes candidates make in banking English section and how to avoid them.',
+      'Quick and effective tips to improve your score in English section.'
     ];
     
     const aptitudeVideos: Video[] = aptitudeUrls.map((url, index) => ({
@@ -518,6 +584,7 @@ export const importSampleVideos = () => {
       playlists: []
     }));
     
+    // Updated English videos with the new URLs and titles
     const englishVideos: Video[] = englishUrls.map((url, index) => ({
       id: `english-${index + 1}`,
       title: englishTitles[index] || `English Video ${index + 1}`,

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { VideoGrid } from '../components/VideoGrid';
 import { AddVideoDialog } from '../components/AddVideoDialog';
@@ -5,7 +6,7 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Video, Category, SortOption, ViewMode } from '../types/video';
 import { addVideo, getVideos, deleteVideo, updateVideo, importSampleVideos } from '../utils/storage';
-import { Plus, Search, Grid, List, SlidersHorizontal, UserRound } from 'lucide-react';
+import { Plus, Search, Grid, List, SlidersHorizontal, UserRound, Image } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
@@ -17,7 +18,7 @@ import { ProfileDialog } from '@/components/ProfileDialog';
 const HomePage = () => {
   const [videos, setVideos] = useState<Video[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<Category | 'all'>('all');
+  const [selectedCategory, setSelectedCategory] = useState<Category | 'all' | 'photos'>('all');
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [sortOption, setSortOption] = useState<SortOption>('newest');
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -129,9 +130,11 @@ const HomePage = () => {
     .filter((video) =>
       video.title.toLowerCase().includes(searchTerm.toLowerCase())
     )
-    .filter((video) =>
-      selectedCategory === 'all' ? true : video.category === selectedCategory
-    );
+    .filter((video) => {
+      if (selectedCategory === 'all') return true;
+      if (selectedCategory === 'photos') return video.videoType === 'googlephotos';
+      return video.category === selectedCategory;
+    });
 
   const sortedVideos = [...filteredVideos].sort((a, b) => {
     switch (sortOption) {
@@ -175,10 +178,10 @@ const HomePage = () => {
               >
                 <UserRound className="h-5 w-5" />
               </Button>
-              <Button variant="outline" size="icon" onClick={() => setIsOptionsDialogOpen(true)}>
+              <Button variant="outline" size="icon" onClick={() => setIsOptionsDialogOpen(true)} className="rounded-full">
                 <SlidersHorizontal className="h-4 w-4" />
               </Button>
-              <Button onClick={() => setIsAddDialogOpen(true)}>
+              <Button onClick={() => setIsAddDialogOpen(true)} className="rounded-full">
                 <Plus className="mr-2 h-4 w-4" />
                 Add Video
               </Button>
@@ -188,19 +191,23 @@ const HomePage = () => {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
-                className="pl-10"
+                className="pl-10 rounded-full"
                 placeholder="Search videos..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
             <div className="flex flex-col sm:flex-row gap-4 justify-between">
-              <Tabs defaultValue="all" className="w-full sm:w-auto" onValueChange={(value) => setSelectedCategory(value as Category | 'all')}>
-                <TabsList className="grid grid-cols-4 w-full sm:w-auto">
-                  <TabsTrigger value="all">All</TabsTrigger>
-                  <TabsTrigger value="aptitude">Aptitude</TabsTrigger>
-                  <TabsTrigger value="reasoning">Reasoning</TabsTrigger>
-                  <TabsTrigger value="english">English</TabsTrigger>
+              <Tabs defaultValue="all" className="w-full sm:w-auto" onValueChange={(value) => setSelectedCategory(value as Category | 'all' | 'photos')}>
+                <TabsList className="grid grid-cols-5 w-full sm:w-auto rounded-full">
+                  <TabsTrigger value="all" className="rounded-full">All</TabsTrigger>
+                  <TabsTrigger value="aptitude" className="rounded-full">Aptitude</TabsTrigger>
+                  <TabsTrigger value="reasoning" className="rounded-full">Reasoning</TabsTrigger>
+                  <TabsTrigger value="english" className="rounded-full">English</TabsTrigger>
+                  <TabsTrigger value="photos" className="rounded-full">
+                    <Image className="mr-1 h-4 w-4" />
+                    Photos
+                  </TabsTrigger>
                 </TabsList>
               </Tabs>
               <div className="flex gap-2 justify-end">
@@ -208,6 +215,7 @@ const HomePage = () => {
                   variant={viewMode === 'grid' ? "default" : "outline"}
                   size="icon"
                   onClick={() => setViewMode('grid')}
+                  className="rounded-full"
                 >
                   <Grid className="h-4 w-4" />
                 </Button>
@@ -215,16 +223,17 @@ const HomePage = () => {
                   variant={viewMode === 'list' ? "default" : "outline"}
                   size="icon"
                   onClick={() => setViewMode('list')}
+                  className="rounded-full"
                 >
                   <List className="h-4 w-4" />
                 </Button>
                 <Select value={sortOption} onValueChange={(value) => setSortOption(value as SortOption)}>
-                  <SelectTrigger className="w-[140px]">
+                  <SelectTrigger className="w-[140px] rounded-full">
                     <div className="flex items-center">
                       <span>Sort By</span>
                     </div>
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="rounded-xl">
                     <SelectItem value="newest">Newest</SelectItem>
                     <SelectItem value="oldest">Oldest</SelectItem>
                     <SelectItem value="alphabetical">A-Z</SelectItem>
@@ -251,7 +260,7 @@ const HomePage = () => {
                   ? "Try adjusting your search or filters"
                   : "Add your first video to get started"}
               </p>
-              <Button onClick={() => setIsAddDialogOpen(true)}>
+              <Button onClick={() => setIsAddDialogOpen(true)} className="rounded-full">
                 <Plus className="mr-2 h-4 w-4" />
                 Add Video
               </Button>

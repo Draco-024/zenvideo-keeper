@@ -4,7 +4,7 @@ import { Button } from "./ui/button";
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Input } from "./ui/input";
-import { LogOut, Home, Bookmark, List, Settings } from "lucide-react";
+import { LogOut, Home, Bookmark, List, Settings, Image } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "./ui/sheet";
 import { ScrollArea } from "./ui/scroll-area";
@@ -23,7 +23,15 @@ export const ProfileDialog = ({ open, onClose }: ProfileDialogProps) => {
   const [username, setUsername] = useState(
     localStorage.getItem("username") || "User"
   );
+  const [email, setEmail] = useState(
+    localStorage.getItem("userEmail") || ""
+  );
+  const [bio, setBio] = useState(
+    localStorage.getItem("userBio") || ""
+  );
   const [isEditingUsername, setIsEditingUsername] = useState(false);
+  const [isEditingEmail, setIsEditingEmail] = useState(false);
+  const [isEditingBio, setIsEditingBio] = useState(false);
   const navigate = useNavigate();
 
   const handleUsernameChange = (newUsername: string) => {
@@ -32,6 +40,18 @@ export const ProfileDialog = ({ open, onClose }: ProfileDialogProps) => {
       localStorage.setItem("username", newUsername);
       setIsEditingUsername(false);
     }
+  };
+
+  const handleEmailChange = (newEmail: string) => {
+    setEmail(newEmail);
+    localStorage.setItem("userEmail", newEmail);
+    setIsEditingEmail(false);
+  };
+
+  const handleBioChange = (newBio: string) => {
+    setBio(newBio);
+    localStorage.setItem("userBio", newBio);
+    setIsEditingBio(false);
   };
 
   const handleNavigate = (path: string) => {
@@ -72,6 +92,7 @@ export const ProfileDialog = ({ open, onClose }: ProfileDialogProps) => {
             <Input
               defaultValue={username}
               autoFocus
+              className="rounded-full"
               onBlur={(e) => handleUsernameChange(e.target.value)}
               onKeyPress={(e) => {
                 if (e.key === 'Enter') {
@@ -81,30 +102,72 @@ export const ProfileDialog = ({ open, onClose }: ProfileDialogProps) => {
             />
           </div>
         ) : (
-          <Button variant="ghost" onClick={() => setIsEditingUsername(true)}>
+          <Button variant="ghost" onClick={() => setIsEditingUsername(true)} className="rounded-full">
             {username}
+          </Button>
+        )}
+
+        {isEditingEmail ? (
+          <div className="flex items-center gap-2 w-full px-4">
+            <Input
+              defaultValue={email}
+              autoFocus
+              placeholder="Enter your email"
+              className="rounded-full"
+              onBlur={(e) => handleEmailChange(e.target.value)}
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  handleEmailChange((e.target as HTMLInputElement).value);
+                }
+              }}
+            />
+          </div>
+        ) : (
+          <Button variant="ghost" onClick={() => setIsEditingEmail(true)} className="rounded-full">
+            {email ? email : "Add Email"}
+          </Button>
+        )}
+
+        {isEditingBio ? (
+          <div className="flex items-center gap-2 w-full px-4">
+            <Input
+              defaultValue={bio}
+              autoFocus
+              placeholder="Write something about yourself"
+              className="rounded-full"
+              onBlur={(e) => handleBioChange(e.target.value)}
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  handleBioChange((e.target as HTMLInputElement).value);
+                }
+              }}
+            />
+          </div>
+        ) : (
+          <Button variant="ghost" onClick={() => setIsEditingBio(true)} className="rounded-full">
+            {bio ? bio : "Add Bio"}
           </Button>
         )}
       </div>
       
       <div className="flex flex-col gap-2 mt-4">
-        <Button variant="outline" className="w-full justify-start" onClick={() => handleNavigate('/home')}>
+        <Button variant="outline" className="w-full justify-start rounded-full" onClick={() => handleNavigate('/home')}>
           <Home className="mr-2 h-4 w-4" />
           Home
         </Button>
-        <Button variant="outline" className="w-full justify-start" onClick={() => handleNavigate('/favorites')}>
+        <Button variant="outline" className="w-full justify-start rounded-full" onClick={() => handleNavigate('/favorites')}>
           <Bookmark className="mr-2 h-4 w-4" />
           Favorites
         </Button>
-        <Button variant="outline" className="w-full justify-start" onClick={() => handleNavigate('/playlists')}>
+        <Button variant="outline" className="w-full justify-start rounded-full" onClick={() => handleNavigate('/playlists')}>
           <List className="mr-2 h-4 w-4" />
           Playlists
         </Button>
-        <Button variant="outline" className="w-full justify-start" onClick={() => handleNavigate('/settings')}>
+        <Button variant="outline" className="w-full justify-start rounded-full" onClick={() => handleNavigate('/settings')}>
           <Settings className="mr-2 h-4 w-4" />
           Settings
         </Button>
-        <Button variant="outline" className="w-full justify-start text-destructive">
+        <Button variant="outline" className="w-full justify-start rounded-full text-destructive">
           <LogOut className="mr-2 h-4 w-4" />
           Sign Out
         </Button>
@@ -127,7 +190,7 @@ export const ProfileDialog = ({ open, onClose }: ProfileDialogProps) => {
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] rounded-xl">
         <DialogHeader>
           <DialogTitle>Your Profile</DialogTitle>
         </DialogHeader>
