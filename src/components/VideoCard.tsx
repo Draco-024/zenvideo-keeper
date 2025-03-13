@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Video } from "@/types/video";
 import { formatDistanceToNow } from 'date-fns';
-import { Star, StarOff, Eye, BookOpen } from 'lucide-react';
+import { Star, StarOff, BookOpen } from 'lucide-react';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { ChangeCategoryDialog } from './ChangeCategoryDialog';
@@ -63,10 +63,6 @@ export const VideoCard = ({
           
           <Button variant="ghost" size="sm" onClick={() => setIsCategoryDialogOpen(true)} title="Change category">
             <BookOpen className="h-4 w-4" />
-          </Button>
-          
-          <Button variant="ghost" size="sm" onClick={() => onView(video)} title="Watch video">
-            <Eye className="h-4 w-4" />
           </Button>
         </CardFooter>
       </Card>
