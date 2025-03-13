@@ -3,6 +3,7 @@ import { Video, ViewMode } from '@/types/video';
 import { VideoCard } from './VideoCard';
 import { motion } from 'framer-motion';
 import { VideoListItem } from './VideoListItem';
+import { getYouTubeId } from '@/utils/helpers';
 
 export interface VideoGridProps {
   videos: Video[];
@@ -44,12 +45,15 @@ export const VideoGrid = ({
     show: { opacity: 1, y: 0 }
   };
 
-  // Ensure all videos have valid thumbnails
+  // Ensure all videos have valid thumbnails and check if they're accessible
   const validVideos = videos.map(video => {
     if (!video.thumbnail) {
+      const youtubeId = getYouTubeId(video.url);
       return {
         ...video,
-        thumbnail: `https://img.youtube.com/vi/${getYouTubeId(video.url)}/mqdefault.jpg`
+        thumbnail: youtubeId 
+          ? `https://img.youtube.com/vi/${youtubeId}/mqdefault.jpg` 
+          : 'placeholder.svg'
       };
     }
     return video;
@@ -110,10 +114,3 @@ export const VideoGrid = ({
     </motion.div>
   );
 };
-
-// Helper function to extract YouTube ID
-function getYouTubeId(url: string) {
-  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-  const match = url.match(regExp);
-  return (match && match[2].length === 11) ? match[2] : '';
-}

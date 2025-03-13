@@ -1,13 +1,15 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Video } from '@/types/video';
 import { formatDistanceToNow } from 'date-fns';
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
-import { Star, StarOff, Edit, Trash, BookOpen } from 'lucide-react';
+import { Star, StarOff, Edit, Trash, BookOpen, AlertTriangle } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from './ui/alert-dialog';
 import { ChangeCategoryDialog } from './ChangeCategoryDialog';
+import { getYouTubeId } from '@/utils/helpers';
+import { isDeletedYouTubeVideo } from '@/utils/videoValidator';
 
 interface VideoListItemProps {
   video: Video;
@@ -27,11 +29,33 @@ export const VideoListItem = ({
   showBanner = true
 }: VideoListItemProps) => {
   const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
-  const thumbnailUrl = video.thumbnail || 'placeholder.svg';
+  const [thumbnailUrl, setThumbnailUrl] = useState<string>(video.thumbnail || 'placeholder.svg');
+  const [isVideoUnavailable, setIsVideoUnavailable] = useState(false);
+  const [thumbnailError, setThumbnailError] = useState(false);
+
+  // Check if the video might be unavailable
+  useEffect(() => {
+    const checkVideoAvailability = async () => {
+      if (video.videoType === 'youtube') {
+        const videoId = getYouTubeId(video.url);
+        if (videoId) {
+          const isDeleted = await isDeletedYouTubeVideo(videoId);
+          setIsVideoUnavailable(isDeleted);
+          
+          // If we don't have a thumbnail already, set it
+          if (!video.thumbnail) {
+            setThumbnailUrl(`https://img.youtube.com/vi/${videoId}/mqdefault.jpg`);
+          }
+        }
+      }
+    };
+    
+    checkVideoAvailability();
+  }, [video.url, video.videoType, video.thumbnail]);
 
   return (
     <>
-      <Card className="overflow-hidden hover:shadow-md transition-shadow duration-300">
+      <Card className={`overflow-hidden hover:shadow-md transition-shadow duration-300 ${isVideoUnavailable ? 'opacity-80' : ''}`}>
         <CardContent className="p-0">
           <div className="flex flex-col sm:flex-row">
             <div 
@@ -41,8 +65,9 @@ export const VideoListItem = ({
               <img 
                 src={thumbnailUrl} 
                 alt={video.title} 
-                className="w-full h-full object-cover"
+                className={`w-full h-full object-cover ${thumbnailError || isVideoUnavailable ? 'opacity-60' : ''}`}
                 onError={(e) => {
+                  setThumbnailError(true);
                   const target = e.target as HTMLImageElement;
                   target.src = 'placeholder.svg';
                 }}
@@ -50,6 +75,15 @@ export const VideoListItem = ({
               {video.favorite && (
                 <div className="absolute top-2 right-2">
                   <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
+                </div>
+              )}
+              
+              {isVideoUnavailable && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                  <div className="bg-black/80 p-2 rounded-lg flex items-center">
+                    <AlertTriangle className="h-5 w-5 text-yellow-500 mr-2" />
+                    <span className="text-sm text-white">May be unavailable</span>
+                  </div>
                 </div>
               )}
               
