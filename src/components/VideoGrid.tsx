@@ -44,30 +44,33 @@ export const VideoGrid = ({
     show: { opacity: 1, y: 0 }
   };
 
-  // Check if there are any invalid videos without thumbnails
+  // Ensure all videos have valid thumbnails
   const validVideos = videos.map(video => {
-    // Set a default thumbnail for videos that don't have one
     if (!video.thumbnail) {
       return {
         ...video,
-        thumbnail: 'placeholder.svg'
+        thumbnail: `https://img.youtube.com/vi/${getYouTubeId(video.url)}/mqdefault.jpg`
       };
     }
     return video;
   });
 
+  const horizontalClassName = layoutMode === 'horizontal' 
+    ? 'flex flex-row flex-nowrap overflow-x-auto pb-4 space-y-0 space-x-2 hide-scrollbar' 
+    : '';
+    
   if (viewMode === 'grid') {
     return (
       <motion.div 
         className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 ${
-          layoutMode === 'horizontal' ? 'flex flex-row flex-nowrap overflow-x-auto pb-4 grid-flow-col auto-cols-max' : ''
+          layoutMode === 'horizontal' ? 'flex flex-row flex-nowrap overflow-x-auto pb-4 grid-flow-col auto-cols-max hide-scrollbar' : ''
         }`}
         variants={container}
         initial="hidden"
         animate="show"
       >
         {validVideos.map((video) => (
-          <motion.div key={video.id} variants={item} className={layoutMode === 'horizontal' ? 'min-w-[250px]' : ''}>
+          <motion.div key={video.id} variants={item} className={layoutMode === 'horizontal' ? 'min-w-[280px] flex-shrink-0 mx-1' : ''}>
             <VideoCard 
               video={video} 
               onView={onView} 
@@ -83,9 +86,7 @@ export const VideoGrid = ({
   // List view
   return (
     <motion.div 
-      className={`space-y-2 ${
-        layoutMode === 'horizontal' ? 'flex flex-row flex-nowrap overflow-x-auto pb-4 space-y-0 space-x-2' : ''
-      }`}
+      className={`space-y-2 ${horizontalClassName}`}
       variants={container}
       initial="hidden"
       animate="show"
@@ -94,7 +95,7 @@ export const VideoGrid = ({
         <motion.div 
           key={video.id} 
           variants={item}
-          className={layoutMode === 'horizontal' ? 'min-w-[400px] flex-shrink-0' : ''}
+          className={layoutMode === 'horizontal' ? 'min-w-[400px] flex-shrink-0 mx-1' : ''}
         >
           <VideoListItem 
             video={video} 
@@ -109,3 +110,10 @@ export const VideoGrid = ({
     </motion.div>
   );
 };
+
+// Helper function to extract YouTube ID
+function getYouTubeId(url: string) {
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[2].length === 11) ? match[2] : '';
+}

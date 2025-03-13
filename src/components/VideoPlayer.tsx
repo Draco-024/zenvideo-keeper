@@ -1,6 +1,7 @@
 
 import { Video } from '@/types/video';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { AlertCircle, Loader2 } from 'lucide-react';
 
 interface VideoPlayerProps {
   video: Video;
@@ -8,6 +9,13 @@ interface VideoPlayerProps {
 
 export const VideoPlayer = ({ video }: VideoPlayerProps) => {
   const [hasError, setHasError] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  useEffect(() => {
+    // Reset states when video changes
+    setHasError(false);
+    setIsLoading(true);
+  }, [video.id, video.url]);
   
   const getEmbedUrl = () => {
     if (video.videoType === 'googlephotos') {
@@ -22,11 +30,22 @@ export const VideoPlayer = ({ video }: VideoPlayerProps) => {
 
   const handleError = () => {
     setHasError(true);
+    setIsLoading(false);
+  };
+  
+  const handleLoad = () => {
+    setIsLoading(false);
   };
 
   return (
     <div className="rounded-lg overflow-hidden shadow-md bg-black mb-4 sm:mb-6">
-      <div className="aspect-video">
+      <div className="aspect-video relative">
+        {isLoading && !hasError && (
+          <div className="absolute inset-0 flex items-center justify-center bg-gray-900 z-10">
+            <Loader2 className="h-10 w-10 text-primary animate-spin" />
+          </div>
+        )}
+        
         {video.videoType === 'googlephotos' ? (
           <div className="w-full h-full flex items-center justify-center bg-gray-900 text-white">
             <a 
@@ -52,11 +71,7 @@ export const VideoPlayer = ({ video }: VideoPlayerProps) => {
           <div className="w-full h-full flex items-center justify-center bg-gray-900 text-white">
             <div className="flex flex-col items-center justify-center gap-4">
               <div className="h-20 w-20 rounded-full bg-gray-800 flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="10" />
-                  <line x1="12" y1="8" x2="12" y2="12" />
-                  <line x1="12" y1="16" x2="12.01" y2="16" />
-                </svg>
+                <AlertCircle className="h-10 w-10 text-red-500" />
               </div>
               <span className="text-lg font-medium">Video Unavailable</span>
               <span className="text-sm text-gray-400">This video may have been removed or is currently unavailable</span>
@@ -77,6 +92,7 @@ export const VideoPlayer = ({ video }: VideoPlayerProps) => {
             className="w-full h-full"
             allowFullScreen
             onError={handleError}
+            onLoad={handleLoad}
           />
         )}
       </div>
@@ -85,6 +101,8 @@ export const VideoPlayer = ({ video }: VideoPlayerProps) => {
 };
 
 function getYouTubeId(url: string) {
-  const match = url.match(/[?&]v=([^&]+)/);
-  return match ? match[1] : '';
+  // Handle different YouTube URL formats
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[2].length === 11) ? match[2] : '';
 }

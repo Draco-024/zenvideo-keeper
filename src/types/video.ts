@@ -1,4 +1,3 @@
-
 export interface Video {
   id: string;
   title: string;
@@ -35,7 +34,7 @@ export type SortOption = 'newest' | 'oldest' | 'alphabetical' | 'lastWatched';
 
 export type ViewMode = 'grid' | 'list';
 
-export type ShareOption = 'whatsapp' | 'copy' | 'facebook' | 'twitter';
+export type ShareOption = 'copy' | 'whatsapp' | 'facebook' | 'twitter' | 'native';
 
 export interface VideoGridProps {
   videos: Video[];

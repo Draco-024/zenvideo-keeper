@@ -63,6 +63,9 @@ export const ShareDialog = ({ open, onClose, video }: ShareDialogProps) => {
           description: "Video link has been copied to clipboard",
         });
         break;
+      case 'native':
+        // This is handled above but included here to satisfy TypeScript
+        break;
     }
   };
   
