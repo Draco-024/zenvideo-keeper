@@ -17,19 +17,19 @@ const BackHandler = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
 
   useEffect(() => {
-    const handleBackButton = (event: HashChangeEvent) => {
-      event.preventDefault();
+    const handleBackButton = (event: PopStateEvent) => {
       if (location.pathname !== '/') {
-        navigate(-1);
+        // Let the default back behavior happen
       } else {
-        // Close the app or do something else
+        // We're at the home page, consider showing a confirmation dialog to exit
+        // or do nothing to prevent exit
       }
     };
 
-    window.addEventListener('hashchange', handleBackButton);
+    window.addEventListener('popstate', handleBackButton);
 
     return () => {
-      window.removeEventListener('hashchange', handleBackButton);
+      window.removeEventListener('popstate', handleBackButton);
     };
   }, [navigate, location]);
 

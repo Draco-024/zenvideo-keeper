@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Video, ShareOption } from "@/types/video";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
+import { useIsMobile } from "@/hooks/use-media-query";
 
 interface ShareDialogProps {
   open: boolean;
@@ -16,10 +17,32 @@ interface ShareDialogProps {
 export const ShareDialog = ({ open, onClose, video }: ShareDialogProps) => {
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   
-  const handleShare = (option: ShareOption) => {
+  const handleShare = async (option: ShareOption) => {
     const videoTitle = encodeURIComponent(video.title);
     const videoUrl = encodeURIComponent(video.url);
+    
+    // If Web Share API is available and the user is on mobile, use it
+    if (isMobile && navigator.share && option === 'native') {
+      try {
+        await navigator.share({
+          title: video.title,
+          text: `Check out this video: ${video.title}`,
+          url: video.url
+        });
+        
+        toast({
+          title: "Shared Successfully",
+          description: "Video has been shared",
+        });
+        onClose();
+        return;
+      } catch (error) {
+        console.error("Error sharing:", error);
+        // Fall back to other sharing methods
+      }
+    }
     
     switch(option) {
       case 'whatsapp':
@@ -52,6 +75,19 @@ export const ShareDialog = ({ open, onClose, video }: ShareDialogProps) => {
         
         <div className="mt-6 space-y-4">
           <h3 className="text-sm font-medium mb-2">Share "{video.title}"</h3>
+          
+          {isMobile && navigator.share && (
+            <Button 
+              variant="default" 
+              className="flex items-center gap-2 w-full mb-4"
+              onClick={() => handleShare('native')}
+            >
+              <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center">
+                <Share2 className="h-5 w-5" />
+              </div>
+              <span className="font-medium">Share using device</span>
+            </Button>
+          )}
           
           <div className="grid grid-cols-2 gap-3">
             <Button 

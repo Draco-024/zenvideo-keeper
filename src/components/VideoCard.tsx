@@ -3,10 +3,12 @@ import { useState } from 'react';
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Video } from "@/types/video";
 import { formatDistanceToNow } from 'date-fns';
-import { Star, StarOff, BookOpen } from 'lucide-react';
+import { Star, StarOff, BookOpen, Share2 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { ChangeCategoryDialog } from './ChangeCategoryDialog';
+import { ShareDialog } from './ShareDialog';
+import { useMediaQuery } from '@/hooks/use-media-query';
 
 interface VideoCardProps {
   video: Video;
@@ -22,6 +24,8 @@ export const VideoCard = ({
   onChangeCategory
 }: VideoCardProps) => {
   const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+  const isMobile = useMediaQuery('(max-width: 640px)');
   
   const thumbnailUrl = video.thumbnail || 'placeholder.svg';
 
@@ -61,9 +65,15 @@ export const VideoCard = ({
             {video.favorite ? <StarOff className="h-4 w-4" /> : <Star className="h-4 w-4" />}
           </Button>
           
-          <Button variant="ghost" size="sm" onClick={() => setIsCategoryDialogOpen(true)} title="Change category">
-            <BookOpen className="h-4 w-4" />
-          </Button>
+          <div className="flex gap-1">
+            <Button variant="ghost" size="sm" onClick={() => setIsShareDialogOpen(true)} title="Share video">
+              <Share2 className="h-4 w-4" />
+            </Button>
+            
+            <Button variant="ghost" size="sm" onClick={() => setIsCategoryDialogOpen(true)} title="Change category">
+              <BookOpen className="h-4 w-4" />
+            </Button>
+          </div>
         </CardFooter>
       </Card>
 
@@ -72,6 +82,12 @@ export const VideoCard = ({
         onClose={() => setIsCategoryDialogOpen(false)}
         video={video}
         onCategoryChange={onChangeCategory}
+      />
+      
+      <ShareDialog
+        open={isShareDialogOpen}
+        onClose={() => setIsShareDialogOpen(false)}
+        video={video}
       />
     </>
   );

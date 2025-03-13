@@ -45,3 +45,24 @@ export function useIsTablet(): boolean {
 export function useIsDesktop(): boolean {
   return useMediaQuery('(min-width: 1025px)');
 }
+
+export function useIsLandscape(): boolean {
+  return useMediaQuery('(orientation: landscape)');
+}
+
+export function useIsPortrait(): boolean {
+  return useMediaQuery('(orientation: portrait)');
+}
+
+export function usePreferredLayout(): 'horizontal' | 'vertical' {
+  const isMobile = useIsMobile();
+  const isPortrait = useIsPortrait();
+  
+  // On mobile portrait, use vertical layout
+  if (isMobile && isPortrait) {
+    return 'vertical';
+  }
+  
+  // Default to horizontal
+  return 'horizontal';
+}
