@@ -1,5 +1,5 @@
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./ui/dialog";
 import { Button } from "./ui/button";
 import { Video, Category } from "@/types/video";
 import { updateVideo } from "@/utils/storage";
@@ -51,6 +51,9 @@ export const ChangeCategoryDialog = ({
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Change Category</DialogTitle>
+          <DialogDescription>
+            Move this video to a different category.
+          </DialogDescription>
         </DialogHeader>
         
         <div className="py-4">
@@ -59,17 +62,17 @@ export const ChangeCategoryDialog = ({
             onValueChange={(value) => setSelectedCategory(value as Category)}
             className="space-y-3"
           >
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 p-2 rounded-lg hover:bg-accent transition-colors duration-200">
               <RadioGroupItem value="aptitude" id="aptitude" />
-              <Label htmlFor="aptitude">Aptitude</Label>
+              <Label htmlFor="aptitude" className="font-medium cursor-pointer flex-1">Aptitude</Label>
             </div>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 p-2 rounded-lg hover:bg-accent transition-colors duration-200">
               <RadioGroupItem value="reasoning" id="reasoning" />
-              <Label htmlFor="reasoning">Reasoning</Label>
+              <Label htmlFor="reasoning" className="font-medium cursor-pointer flex-1">Reasoning</Label>
             </div>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 p-2 rounded-lg hover:bg-accent transition-colors duration-200">
               <RadioGroupItem value="english" id="english" />
-              <Label htmlFor="english">English</Label>
+              <Label htmlFor="english" className="font-medium cursor-pointer flex-1">English</Label>
             </div>
           </RadioGroup>
         </div>

@@ -12,6 +12,7 @@ export interface VideoGridProps {
   onFavorite: (video: Video) => void;
   onView: (video: Video) => void;
   showBannerInListView?: boolean;
+  layoutMode?: 'horizontal' | 'vertical';
 }
 
 export const VideoGrid = ({ 
@@ -21,7 +22,8 @@ export const VideoGrid = ({
   onEdit, 
   onFavorite, 
   onView,
-  showBannerInListView = true
+  showBannerInListView = true,
+  layoutMode = 'vertical'
 }: VideoGridProps) => {
   const handleFavoriteToggle = (video: Video) => {
     onFavorite(video);
@@ -42,16 +44,30 @@ export const VideoGrid = ({
     show: { opacity: 1, y: 0 }
   };
 
+  // Check if there are any invalid videos without thumbnails
+  const validVideos = videos.map(video => {
+    // Set a default thumbnail for videos that don't have one
+    if (!video.thumbnail) {
+      return {
+        ...video,
+        thumbnail: 'placeholder.svg'
+      };
+    }
+    return video;
+  });
+
   if (viewMode === 'grid') {
     return (
       <motion.div 
-        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+        className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 ${
+          layoutMode === 'horizontal' ? 'flex flex-row flex-nowrap overflow-x-auto pb-4 grid-flow-col auto-cols-max' : ''
+        }`}
         variants={container}
         initial="hidden"
         animate="show"
       >
-        {videos.map((video) => (
-          <motion.div key={video.id} variants={item}>
+        {validVideos.map((video) => (
+          <motion.div key={video.id} variants={item} className={layoutMode === 'horizontal' ? 'min-w-[250px]' : ''}>
             <VideoCard 
               video={video} 
               onView={onView} 
@@ -67,13 +83,19 @@ export const VideoGrid = ({
   // List view
   return (
     <motion.div 
-      className="space-y-2"
+      className={`space-y-2 ${
+        layoutMode === 'horizontal' ? 'flex flex-row flex-nowrap overflow-x-auto pb-4 space-y-0 space-x-2' : ''
+      }`}
       variants={container}
       initial="hidden"
       animate="show"
     >
-      {videos.map((video) => (
-        <motion.div key={video.id} variants={item}>
+      {validVideos.map((video) => (
+        <motion.div 
+          key={video.id} 
+          variants={item}
+          className={layoutMode === 'horizontal' ? 'min-w-[400px] flex-shrink-0' : ''}
+        >
           <VideoListItem 
             video={video} 
             onView={onView} 

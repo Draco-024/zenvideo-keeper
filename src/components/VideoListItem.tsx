@@ -4,7 +4,7 @@ import { Video } from '@/types/video';
 import { formatDistanceToNow } from 'date-fns';
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
-import { Star, StarOff, Edit, Trash, Eye, BookOpen } from 'lucide-react';
+import { Star, StarOff, Edit, Trash, BookOpen } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from './ui/alert-dialog';
 import { ChangeCategoryDialog } from './ChangeCategoryDialog';
@@ -42,6 +42,10 @@ export const VideoListItem = ({
                 src={thumbnailUrl} 
                 alt={video.title} 
                 className="w-full h-full object-cover"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.src = 'placeholder.svg';
+                }}
               />
               {video.favorite && (
                 <div className="absolute top-2 right-2">
@@ -97,11 +101,6 @@ export const VideoListItem = ({
                 <Button variant="ghost" size="sm" onClick={() => setIsCategoryDialogOpen(true)}>
                   <BookOpen className="h-4 w-4 mr-1" />
                   <span className="hidden sm:inline">Change Category</span>
-                </Button>
-                
-                <Button variant="ghost" size="sm" onClick={() => onView(video)}>
-                  <Eye className="h-4 w-4 mr-1" />
-                  <span className="hidden sm:inline">Watch</span>
                 </Button>
                 
                 <Button variant="ghost" size="sm" onClick={() => onEdit(video)}>

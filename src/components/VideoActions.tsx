@@ -34,66 +34,55 @@ export const VideoActions = ({
   return (
     <div className="flex flex-wrap gap-2 video-actions justify-end">
       <Button 
-        variant="outline" 
-        size="icon" 
+        variant="category" 
+        size="sm" 
         onClick={onToggleFavorite}
         className={video.favorite ? "text-yellow-500" : ""}
         title={video.favorite ? "Remove from favorites" : "Add to favorites"}
       >
         {video.favorite ? <Star className="h-4 w-4 fill-yellow-500" /> : <StarOff className="h-4 w-4" />}
+        <span className="hidden sm:inline">
+          {video.favorite ? "Unfavorite" : "Favorite"}
+        </span>
       </Button>
       
       <Button 
-        variant="outline" 
-        size="icon"
+        variant="category" 
+        size="sm"
         onClick={onOpenCategoryDialog}
         title="Change category"
       >
         <BookOpen className="h-4 w-4" />
-      </Button>
-      
-      <Button 
-        variant="outline" 
-        size="icon"
-        onClick={onOpenShareDialog}
-        title="Share video"
-      >
-        <Share2 className="h-4 w-4" />
-      </Button>
-      
-      <Button 
-        variant="outline" 
-        size="icon"
-        onClick={onOpenPlaylistDialog}
-        title="Add to playlist"
-      >
-        <FolderPlus className="h-4 w-4" />
+        <span className="hidden sm:inline">Change Category</span>
       </Button>
       
       {isYouTubeVideo && (
         <Button 
-          variant="outline" 
-          size="icon"
+          variant="category" 
+          size="sm"
           onClick={() => setIsDownloadDialogOpen(true)}
           title="Download video"
         >
           <Download className="h-4 w-4" />
+          <span className="hidden sm:inline">Download</span>
         </Button>
       )}
       
       <Button 
-        variant="outline" 
-        size="icon"
+        variant="category" 
+        size="sm"
         onClick={onOpenEditDialog}
         title="Edit video"
       >
         <Edit className="h-4 w-4" />
+        <span className="hidden sm:inline">Edit</span>
       </Button>
       
       <AlertDialog>
         <AlertDialogTrigger asChild>
-          <Button variant="outline" size="icon" className="text-red-500" title="Delete video">
+          <Button variant="category" size="sm" className="text-red-500" title="Delete video">
             <Trash className="h-4 w-4" />
+            <span className="hidden sm:inline">Delete</span>
           </Button>
         </AlertDialogTrigger>
         <AlertDialogContent>
@@ -113,9 +102,10 @@ export const VideoActions = ({
         </AlertDialogContent>
       </AlertDialog>
       
-      <Button variant="outline" size="icon" asChild title="View on YouTube">
+      <Button variant="category" size="sm" asChild title="View on YouTube">
         <a href={video.url} target="_blank" rel="noopener noreferrer">
           <ExternalLink className="h-4 w-4" />
+          <span className="hidden sm:inline">View on YouTube</span>
         </a>
       </Button>
 
