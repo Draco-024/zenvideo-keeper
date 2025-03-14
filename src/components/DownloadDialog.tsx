@@ -231,8 +231,8 @@ export const DownloadDialog = ({ open, onClose, videoUrl, videoTitle }: Download
                 Video API
               </TabsTrigger>
               <TabsTrigger value="alternate">
-                <Video className="mr-2 h-4 w-4" />
-                Alt Video
+                <Music className="mr-2 h-4 w-4" />
+                Alt Audio
               </TabsTrigger>
               <TabsTrigger value="mp3">
                 <Music className="mr-2 h-4 w-4" />

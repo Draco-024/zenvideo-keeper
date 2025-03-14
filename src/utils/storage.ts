@@ -491,6 +491,90 @@ export const importSampleVideos = () => {
       comments: []
     },
     {
+      id: 'a24',
+      title: 'Complex Aptitude Problems',
+      url: 'https://www.youtube.com/watch?v=Ong-IRxSzwg',
+      category: 'aptitude',
+      thumbnail: 'https://img.youtube.com/vi/Ong-IRxSzwg/mqdefault.jpg',
+      description: 'Solving complex aptitude problems for competitive exams',
+      favorite: false,
+      createdAt: Date.now() - 7700000,
+      videoType: 'youtube',
+      comments: []
+    },
+    {
+      id: 'a25',
+      title: 'Algebra Problems Simplified',
+      url: 'https://www.youtube.com/watch?v=6NjW1aIsrbI',
+      category: 'aptitude',
+      thumbnail: 'https://img.youtube.com/vi/6NjW1aIsrbI/mqdefault.jpg',
+      description: 'Simplifying algebra problems for banking exams',
+      favorite: false,
+      createdAt: Date.now() - 7600000,
+      videoType: 'youtube',
+      comments: []
+    },
+    {
+      id: 'a26',
+      title: 'Number System Tricks',
+      url: 'https://www.youtube.com/watch?v=Pg85HjGuI2U',
+      category: 'aptitude',
+      thumbnail: 'https://img.youtube.com/vi/Pg85HjGuI2U/mqdefault.jpg',
+      description: 'Tricks for number system problems in banking exams',
+      favorite: false,
+      createdAt: Date.now() - 7500000,
+      videoType: 'youtube',
+      comments: []
+    },
+    {
+      id: 'a27',
+      title: 'Fast Calculation Techniques',
+      url: 'https://www.youtube.com/watch?v=Qu5ie6iwTG0',
+      category: 'aptitude',
+      thumbnail: 'https://img.youtube.com/vi/Qu5ie6iwTG0/mqdefault.jpg',
+      description: 'Learn fast calculation techniques for competitive exams',
+      favorite: false,
+      createdAt: Date.now() - 7400000,
+      videoType: 'youtube',
+      comments: []
+    },
+    {
+      id: 'a28',
+      title: 'Geometry Shortcuts',
+      url: 'https://www.youtube.com/watch?v=czT9nLkkgSc',
+      category: 'aptitude',
+      thumbnail: 'https://img.youtube.com/vi/czT9nLkkgSc/mqdefault.jpg',
+      description: 'Geometry shortcuts for banking examinations',
+      favorite: false,
+      createdAt: Date.now() - 7300000,
+      videoType: 'youtube',
+      comments: []
+    },
+    {
+      id: 'a29',
+      title: 'Mensuration Problems',
+      url: 'https://www.youtube.com/watch?v=WRlWAwmhVm0',
+      category: 'aptitude',
+      thumbnail: 'https://img.youtube.com/vi/WRlWAwmhVm0/mqdefault.jpg',
+      description: 'Solving mensuration problems quickly',
+      favorite: false,
+      createdAt: Date.now() - 7200000,
+      videoType: 'youtube',
+      comments: []
+    },
+    {
+      id: 'a30',
+      title: 'Time Management in Aptitude',
+      url: 'https://www.youtube.com/watch?v=v9TVfEiYkNA',
+      category: 'aptitude',
+      thumbnail: 'https://img.youtube.com/vi/v9TVfEiYkNA/mqdefault.jpg',
+      description: 'Time management techniques for aptitude section',
+      favorite: false,
+      createdAt: Date.now() - 7100000,
+      videoType: 'youtube',
+      comments: []
+    },
+    {
       id: 'r1',
       title: 'Logical Reasoning Introduction',
       url: 'https://www.youtube.com/watch?v=NcLSjxKVT_k',
@@ -1183,9 +1267,9 @@ export const importSampleVideos = () => {
 export const forceRefreshVideos = (): void => {
   const videos = getVideos();
   if (videos.length > 0) {
-    const englishVideos = videos.filter(v => v.category === 'english');
-    // If we have less than expected English videos, force refresh
-    if (englishVideos.length < 30) {
+    const aptitudeVideos = videos.filter(v => v.category === 'aptitude');
+    // If we have less than expected aptitude videos, force refresh
+    if (aptitudeVideos.length < 30) {
       // Store any user-added videos that are not in the sample set
       const userAddedVideos = videos.filter(v => 
         !v.id.startsWith('1') && 
@@ -1198,7 +1282,8 @@ export const forceRefreshVideos = (): void => {
         !v.id.startsWith('8') && 
         !v.id.startsWith('9') && 
         !v.id.startsWith('r') && 
-        !v.id.startsWith('en')
+        !v.id.startsWith('en') &&
+        !v.id.startsWith('a')
       );
       
       // Clear videos and reimport samples
