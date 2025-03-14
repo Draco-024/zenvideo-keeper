@@ -455,6 +455,42 @@ export const importSampleVideos = () => {
       comments: []
     },
     {
+      id: 'a21',
+      title: 'Advanced Aptitude Techniques',
+      url: 'https://www.youtube.com/watch?v=QuqJawKlCQY',
+      category: 'aptitude',
+      thumbnail: 'https://img.youtube.com/vi/QuqJawKlCQY/mqdefault.jpg',
+      description: 'Advanced aptitude techniques for competitive exams',
+      favorite: false,
+      createdAt: Date.now() - 8000000,
+      videoType: 'youtube',
+      comments: []
+    },
+    {
+      id: 'a22',
+      title: 'Banking Aptitude Special',
+      url: 'https://www.youtube.com/watch?v=Aewb9AjL2YM',
+      category: 'aptitude',
+      thumbnail: 'https://img.youtube.com/vi/Aewb9AjL2YM/mqdefault.jpg',
+      description: 'Special aptitude tricks for banking exams',
+      favorite: false,
+      createdAt: Date.now() - 7900000,
+      videoType: 'youtube',
+      comments: []
+    },
+    {
+      id: 'a23',
+      title: 'Profit & Loss Advanced Problems',
+      url: 'https://www.youtube.com/watch?v=uvNvq1n88xo',
+      category: 'aptitude',
+      thumbnail: 'https://img.youtube.com/vi/uvNvq1n88xo/mqdefault.jpg',
+      description: 'Advanced profit and loss problems for bank exams',
+      favorite: false,
+      createdAt: Date.now() - 7800000,
+      videoType: 'youtube',
+      comments: []
+    },
+    {
       id: 'r1',
       title: 'Logical Reasoning Introduction',
       url: 'https://www.youtube.com/watch?v=NcLSjxKVT_k',
@@ -631,6 +667,42 @@ export const importSampleVideos = () => {
       description: 'Master alpha-numeric series for competitive exams',
       favorite: false,
       createdAt: Date.now() - 8600000,
+      videoType: 'youtube',
+      comments: []
+    },
+    {
+      id: 'r16',
+      title: 'Advanced Logical Reasoning',
+      url: 'https://www.youtube.com/watch?v=czOyV0OklOA',
+      category: 'reasoning',
+      thumbnail: 'https://img.youtube.com/vi/czOyV0OklOA/mqdefault.jpg',
+      description: 'Advanced logical reasoning for competitive exams',
+      favorite: false,
+      createdAt: Date.now() - 8500000,
+      videoType: 'youtube',
+      comments: []
+    },
+    {
+      id: 'r17',
+      title: 'Critical Reasoning',
+      url: 'https://www.youtube.com/watch?v=dVSjBTOP1EA',
+      category: 'reasoning',
+      thumbnail: 'https://img.youtube.com/vi/dVSjBTOP1EA/mqdefault.jpg',
+      description: 'Critical reasoning strategies for banking exams',
+      favorite: false,
+      createdAt: Date.now() - 8400000,
+      videoType: 'youtube',
+      comments: []
+    },
+    {
+      id: 'r18',
+      title: 'Course of Action Problems',
+      url: 'https://www.youtube.com/watch?v=G-Or_P2uV0g',
+      category: 'reasoning',
+      thumbnail: 'https://img.youtube.com/vi/G-Or_P2uV0g/mqdefault.jpg',
+      description: 'Solve course of action problems effectively',
+      favorite: false,
+      createdAt: Date.now() - 8300000,
       videoType: 'youtube',
       comments: []
     },

@@ -43,3 +43,46 @@ export const isDeletedYouTubeVideo = async (videoId: string): Promise<boolean> =
     return true;
   }
 };
+
+/**
+ * Validate a YouTube video by both checking if the video exists and if it's available
+ * @param url The YouTube URL to validate
+ * @returns Promise resolving to true if the video exists and is available, false otherwise
+ */
+export const validateYouTubeVideo = async (url: string): Promise<boolean> => {
+  const videoId = getYouTubeId(url);
+  if (!videoId) return false;
+  
+  const urlExists = await validateYouTubeUrl(url);
+  if (!urlExists) return false;
+  
+  const isDeleted = await isDeletedYouTubeVideo(videoId);
+  return !isDeleted;
+};
+
+/**
+ * Pre-validate a batch of YouTube videos
+ * @param urls Array of YouTube URLs to validate
+ * @returns Promise resolving to an object with URL as key and boolean as value
+ */
+export const batchValidateYouTubeVideos = async (urls: string[]): Promise<Record<string, boolean>> => {
+  const results: Record<string, boolean> = {};
+  
+  // Process in batches to avoid too many concurrent requests
+  const batchSize = 5;
+  const batches = [];
+  
+  for (let i = 0; i < urls.length; i += batchSize) {
+    batches.push(urls.slice(i, i + batchSize));
+  }
+  
+  for (const batch of batches) {
+    const batchPromises = batch.map(async (url) => {
+      results[url] = await validateYouTubeVideo(url);
+    });
+    
+    await Promise.all(batchPromises);
+  }
+  
+  return results;
+};

@@ -2,6 +2,8 @@
 import { Video } from '@/types/video';
 import { useState, useEffect, useRef } from 'react';
 import { AlertCircle, Loader2 } from 'lucide-react';
+import { getYouTubeId } from '@/utils/helpers';
+import { validateYouTubeVideo } from '@/utils/videoValidator';
 
 interface VideoPlayerProps {
   video: Video;
@@ -10,13 +12,37 @@ interface VideoPlayerProps {
 export const VideoPlayer = ({ video }: VideoPlayerProps) => {
   const [hasError, setHasError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isValidatingUrl, setIsValidatingUrl] = useState(false);
+  const [isVideoAvailable, setIsVideoAvailable] = useState(true);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   
   useEffect(() => {
     // Reset states when video changes
     setHasError(false);
     setIsLoading(true);
-  }, [video.id, video.url]);
+    setIsVideoAvailable(true);
+    
+    // Validate YouTube URL
+    if (video.videoType === 'youtube') {
+      setIsValidatingUrl(true);
+      validateYouTubeVideo(video.url)
+        .then(isValid => {
+          setIsVideoAvailable(isValid);
+          if (!isValid) {
+            setHasError(true);
+            setIsLoading(false);
+          }
+        })
+        .catch(() => {
+          setIsVideoAvailable(false);
+          setHasError(true);
+          setIsLoading(false);
+        })
+        .finally(() => {
+          setIsValidatingUrl(false);
+        });
+    }
+  }, [video.id, video.url, video.videoType]);
   
   const getEmbedUrl = () => {
     if (video.videoType === 'googlephotos') {
@@ -44,7 +70,7 @@ export const VideoPlayer = ({ video }: VideoPlayerProps) => {
   // Add a timeout to detect videos that never load properly
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      if (isLoading) {
+      if (isLoading && !isValidatingUrl) {
         console.log('Video loading timed out:', video.url);
         setHasError(true);
         setIsLoading(false);
@@ -52,12 +78,12 @@ export const VideoPlayer = ({ video }: VideoPlayerProps) => {
     }, 10000); // 10 seconds timeout
     
     return () => clearTimeout(timeoutId);
-  }, [isLoading, video.url]);
+  }, [isLoading, video.url, isValidatingUrl]);
 
   return (
     <div className="rounded-lg overflow-hidden shadow-md bg-black mb-4 sm:mb-6">
       <div className="aspect-video relative">
-        {isLoading && !hasError && (
+        {(isLoading || isValidatingUrl) && !hasError && (
           <div className="absolute inset-0 flex items-center justify-center bg-gray-900 z-10">
             <Loader2 className="h-10 w-10 text-primary animate-spin" />
           </div>
@@ -84,7 +110,7 @@ export const VideoPlayer = ({ video }: VideoPlayerProps) => {
               <span className="text-sm text-gray-400">Click to view in Google Photos</span>
             </a>
           </div>
-        ) : hasError ? (
+        ) : hasError || !isVideoAvailable ? (
           <div className="w-full h-full flex items-center justify-center bg-gray-900 text-white">
             <div className="flex flex-col items-center justify-center gap-4">
               <div className="h-20 w-20 rounded-full bg-gray-800 flex items-center justify-center">
@@ -118,11 +144,3 @@ export const VideoPlayer = ({ video }: VideoPlayerProps) => {
     </div>
   );
 };
-
-// Helper function to extract YouTube ID
-function getYouTubeId(url: string) {
-  // Handle different YouTube URL formats
-  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-  const match = url.match(regExp);
-  return (match && match[2].length === 11) ? match[2] : '';
-}
