@@ -18,6 +18,11 @@ export interface VideoGridProps {
   layoutMode?: 'horizontal' | 'vertical';
 }
 
+// Extend the Video type locally to include videoAvailable
+interface ValidatedVideo extends Video {
+  videoAvailable: boolean;
+}
+
 export const VideoGrid = ({ 
   videos, 
   viewMode, 
@@ -28,7 +33,7 @@ export const VideoGrid = ({
   showBannerInListView = true,
   layoutMode = 'vertical'
 }: VideoGridProps) => {
-  const [validatedVideos, setValidatedVideos] = useState<Video[]>([]);
+  const [validatedVideos, setValidatedVideos] = useState<ValidatedVideo[]>([]);
   const [isValidating, setIsValidating] = useState(false);
 
   const handleFavoriteToggle = (video: Video) => {
@@ -61,12 +66,12 @@ export const VideoGrid = ({
             ? `https://img.youtube.com/vi/${youtubeId}/mqdefault.jpg` 
             : 'placeholder.svg',
           videoAvailable: true, // Default to true until validated
-        };
+        } as ValidatedVideo;
       }
       return {
         ...video,
-        videoAvailable: video.videoAvailable !== false, // Default to true if not set
-      };
+        videoAvailable: true, // Default to true if not set
+      } as ValidatedVideo;
     });
     
     setValidatedVideos(videosWithThumbnails);

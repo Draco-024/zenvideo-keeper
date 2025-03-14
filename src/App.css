@@ -1,3 +1,4 @@
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -114,6 +115,21 @@ input[type="text"], input[type="search"] {
 
 .category-button:hover {
   background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Minimal UI buttons */
+.video-actions button, 
+.video-actions a[role="button"] {
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  background-color: transparent;
+  backdrop-filter: blur(4px);
+  transition: all 0.2s ease;
+}
+
+.video-actions button:hover, 
+.video-actions a[role="button"]:hover {
+  background-color: rgba(0, 0, 0, 0.03);
+  border-color: rgba(0, 0, 0, 0.1);
 }
 
 /* Fix list view for mobile */

@@ -16,7 +16,14 @@ export const validateYouTubeUrl = async (url: string): Promise<boolean> => {
   try {
     // Try to fetch the thumbnail - if it returns a 404, the video likely doesn't exist
     const response = await fetch(`https://img.youtube.com/vi/${videoId}/mqdefault.jpg`, { method: 'HEAD' });
-    return response.ok;
+    
+    // If the thumbnail request was successful, it doesn't necessarily mean the video is available
+    // We need to check if it's the standard "unavailable" thumbnail
+    if (response.ok) {
+      return !(await isDeletedYouTubeVideo(videoId));
+    }
+    
+    return false;
   } catch (error) {
     console.error('Error validating YouTube URL:', error);
     return false;

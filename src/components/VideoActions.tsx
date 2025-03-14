@@ -34,10 +34,10 @@ export const VideoActions = ({
   return (
     <div className="flex flex-wrap gap-2 video-actions justify-end">
       <Button 
-        variant="category" 
+        variant="outline" 
         size="sm" 
         onClick={onToggleFavorite}
-        className={video.favorite ? "text-yellow-500" : ""}
+        className={video.favorite ? "text-yellow-500 border-yellow-200 bg-yellow-50/50" : ""}
         title={video.favorite ? "Remove from favorites" : "Add to favorites"}
       >
         {video.favorite ? <Star className="h-4 w-4 fill-yellow-500" /> : <StarOff className="h-4 w-4" />}
@@ -47,7 +47,7 @@ export const VideoActions = ({
       </Button>
       
       <Button 
-        variant="category" 
+        variant="outline" 
         size="sm"
         onClick={onOpenCategoryDialog}
         title="Change category"
@@ -58,7 +58,7 @@ export const VideoActions = ({
       
       {isYouTubeVideo && (
         <Button 
-          variant="category" 
+          variant="outline" 
           size="sm"
           onClick={() => setIsDownloadDialogOpen(true)}
           title="Download video"
@@ -69,7 +69,7 @@ export const VideoActions = ({
       )}
       
       <Button 
-        variant="category" 
+        variant="outline" 
         size="sm"
         onClick={onOpenEditDialog}
         title="Edit video"
@@ -80,7 +80,7 @@ export const VideoActions = ({
       
       <AlertDialog>
         <AlertDialogTrigger asChild>
-          <Button variant="category" size="sm" className="text-red-500" title="Delete video">
+          <Button variant="outline" size="sm" className="text-red-500 border-red-200 bg-red-50/50" title="Delete video">
             <Trash className="h-4 w-4" />
             <span className="hidden sm:inline">Delete</span>
           </Button>
@@ -102,7 +102,7 @@ export const VideoActions = ({
         </AlertDialogContent>
       </AlertDialog>
       
-      <Button variant="category" size="sm" asChild title="View on YouTube">
+      <Button variant="outline" size="sm" asChild title="View on YouTube">
         <a href={video.url} target="_blank" rel="noopener noreferrer">
           <ExternalLink className="h-4 w-4" />
           <span className="hidden sm:inline">View on YouTube</span>
