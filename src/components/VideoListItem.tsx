@@ -10,6 +10,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { ChangeCategoryDialog } from './ChangeCategoryDialog';
 import { getYouTubeId } from '@/utils/helpers';
 import { isDeletedYouTubeVideo } from '@/utils/videoValidator';
+import { getCategories } from '@/utils/categoryUtils';
 
 interface VideoListItemProps {
   video: Video;
@@ -32,6 +33,7 @@ export const VideoListItem = ({
   const [thumbnailUrl, setThumbnailUrl] = useState<string>(video.thumbnail || 'placeholder.svg');
   const [isVideoUnavailable, setIsVideoUnavailable] = useState(false);
   const [thumbnailError, setThumbnailError] = useState(false);
+  const [categoryName, setCategoryName] = useState<string>(video.category);
 
   // Check if the video might be unavailable
   useEffect(() => {
@@ -51,7 +53,16 @@ export const VideoListItem = ({
     };
     
     checkVideoAvailability();
-  }, [video.url, video.videoType, video.thumbnail]);
+    
+    // Get category name from category ID
+    const categories = getCategories();
+    const category = categories.find(cat => cat.id === video.category);
+    if (category) {
+      setCategoryName(category.name);
+    } else {
+      setCategoryName(video.category.charAt(0).toUpperCase() + video.category.slice(1));
+    }
+  }, [video.url, video.videoType, video.thumbnail, video.category]);
 
   return (
     <>
@@ -90,7 +101,7 @@ export const VideoListItem = ({
               {showBanner && (
                 <div className="absolute bottom-2 right-2">
                   <Badge variant={video.category === 'aptitude' ? 'default' : video.category === 'reasoning' ? 'secondary' : 'outline'}>
-                    {video.category.charAt(0).toUpperCase() + video.category.slice(1)}
+                    {categoryName}
                   </Badge>
                 </div>
               )}
@@ -106,7 +117,7 @@ export const VideoListItem = ({
                 </h3>
                 {!showBanner && (
                   <Badge className="mb-2" variant={video.category === 'aptitude' ? 'default' : video.category === 'reasoning' ? 'secondary' : 'outline'}>
-                    {video.category.charAt(0).toUpperCase() + video.category.slice(1)}
+                    {categoryName}
                   </Badge>
                 )}
                 <p className="text-xs text-muted-foreground mb-2">

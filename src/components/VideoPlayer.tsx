@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { AlertCircle, Loader2 } from 'lucide-react';
 import { getYouTubeId } from '@/utils/helpers';
 import { validateYouTubeVideo } from '@/utils/videoValidator';
+import ReactPlayer from 'react-player';
 
 interface VideoPlayerProps {
   video: Video;
@@ -14,6 +15,7 @@ export const VideoPlayer = ({ video }: VideoPlayerProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isValidatingUrl, setIsValidatingUrl] = useState(false);
   const [isVideoAvailable, setIsVideoAvailable] = useState(true);
+  const [showReactPlayer, setShowReactPlayer] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   
   useEffect(() => {
@@ -21,6 +23,7 @@ export const VideoPlayer = ({ video }: VideoPlayerProps) => {
     setHasError(false);
     setIsLoading(true);
     setIsVideoAvailable(true);
+    setShowReactPlayer(false);
     
     // Validate YouTube URL
     if (video.videoType === 'youtube') {
@@ -41,19 +44,23 @@ export const VideoPlayer = ({ video }: VideoPlayerProps) => {
         .finally(() => {
           setIsValidatingUrl(false);
         });
+    } else if (video.videoType === 'googlephotos') {
+      // Try to determine if we can use react-player for this URL
+      // If it's a direct media URL, we can use ReactPlayer
+      if (video.url.match(/\.(mp4|webm|ogg|mov)($|\?)/i)) {
+        setShowReactPlayer(true);
+      }
     }
   }, [video.id, video.url, video.videoType]);
   
   const getEmbedUrl = () => {
-    if (video.videoType === 'googlephotos') {
-      // For Google Photos, we'll return the direct URL
-      return video.url;
-    } else {
-      // For YouTube
+    if (video.videoType === 'youtube') {
       const youtubeId = getYouTubeId(video.url);
       // Use the embed API with additional parameters for better compatibility
       return `https://www.youtube.com/embed/${youtubeId}?enablejsapi=1&origin=${window.location.origin}&rel=0`;
     }
+    // For Google Photos, we'll use the react-player component instead
+    return '';
   };
 
   const handleError = () => {
@@ -64,6 +71,15 @@ export const VideoPlayer = ({ video }: VideoPlayerProps) => {
   
   const handleLoad = () => {
     console.log('Video loaded successfully:', video.url);
+    setIsLoading(false);
+  };
+
+  const handleReactPlayerReady = () => {
+    setIsLoading(false);
+  };
+
+  const handleReactPlayerError = () => {
+    setHasError(true);
     setIsLoading(false);
   };
 
@@ -89,7 +105,7 @@ export const VideoPlayer = ({ video }: VideoPlayerProps) => {
           </div>
         )}
         
-        {video.videoType === 'googlephotos' ? (
+        {video.videoType === 'googlephotos' && !showReactPlayer ? (
           <div className="w-full h-full flex items-center justify-center bg-gray-900 text-white">
             <a 
               href={video.url} 
@@ -110,6 +126,22 @@ export const VideoPlayer = ({ video }: VideoPlayerProps) => {
               <span className="text-sm text-gray-400">Click to view in Google Photos</span>
             </a>
           </div>
+        ) : video.videoType === 'googlephotos' && showReactPlayer ? (
+          <ReactPlayer
+            url={video.url}
+            width="100%"
+            height="100%"
+            controls={true}
+            onReady={handleReactPlayerReady}
+            onError={handleReactPlayerError}
+            config={{
+              file: {
+                attributes: {
+                  controlsList: 'nodownload'
+                }
+              }
+            }}
+          />
         ) : hasError || !isVideoAvailable ? (
           <div className="w-full h-full flex items-center justify-center bg-gray-900 text-white">
             <div className="flex flex-col items-center justify-center gap-4">

@@ -18,14 +18,17 @@ const BackHandler = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const handleBackButton = (event: PopStateEvent) => {
-      // Normal back button behavior is preserved for navigation
-      // History handling is managed by React Router
+      // The History API will handle most of the navigation
+      // We only need to customize behavior for the home route
       
-      // Optionally, you could show a confirmation when trying to exit the app
       if (location.pathname === '/' && window.history.state?.idx === 0) {
         // We're at the home page and at the first entry in history stack
-        // Could show a confirmation dialog here if desired
-        // For now, we'll let the default behavior handle it
+        // This is where we'd handle app exit confirmation if needed
+        // For now, just let the default browser behavior handle it
+        console.log('At home and at first entry in history - would exit app in a mobile context');
+      } else {
+        // For all other routes, just let React Router handle the navigation
+        console.log('Navigation handled by React Router:', location.pathname);
       }
     };
 

@@ -1,14 +1,13 @@
 
-export type Category = 'aptitude' | 'reasoning' | 'english';
+export type Category = string;
 export type SortOption = 'newest' | 'oldest' | 'alphabetical' | 'lastWatched';
 export type ViewMode = 'grid' | 'list';
-export type ShareOption = 'whatsapp' | 'facebook' | 'twitter' | 'copy' | 'native';
 
 export interface Comment {
   id: string;
   text: string;
   createdAt: number;
-  username?: string; // Added username field
+  username?: string;
 }
 
 export interface Video {
@@ -33,3 +32,18 @@ export interface Playlist {
   videoIds: string[];
   createdAt: number;
 }
+
+export type ShareOption = 'whatsapp' | 'facebook' | 'twitter' | 'copy' | 'native';
+
+export interface CategorySettings {
+  id: string;
+  name: string;
+  order: number;
+}
+
+// Default categories
+export const DEFAULT_CATEGORIES: CategorySettings[] = [
+  { id: 'aptitude', name: 'Aptitude', order: 0 },
+  { id: 'reasoning', name: 'Reasoning', order: 1 },
+  { id: 'english', name: 'English', order: 2 }
+];
