@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { VideoGrid } from '../components/VideoGrid';
 import { AddVideoDialog } from '../components/AddVideoDialog';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Video, Category, SortOption, ViewMode } from '../types/video';
 import { addVideo, getVideos, deleteVideo, updateVideo, importSampleVideos, forceRefreshVideos } from '../utils/storage';
-import { Plus, Search, Grid, List, SlidersHorizontal, UserRound, Image, Download } from 'lucide-react';
+import { Plus, Search, Grid, List, SlidersHorizontal, UserRound, Image, Download, Settings } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
@@ -13,6 +13,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs"
 import { ViewOptionsDialog } from '@/components/ViewOptionsDialog';
 import { useNavigate } from 'react-router-dom';
 import { ProfileDialog } from '@/components/ProfileDialog';
+import { CategoryManagementDialog } from '@/components/CategoryManagementDialog';
+import { getCategories } from '@/utils/categoryUtils';
+import { 
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 const HomePage = () => {
   const [videos, setVideos] = useState<Video[]>([]);
@@ -23,6 +32,8 @@ const HomePage = () => {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isOptionsDialogOpen, setIsOptionsDialogOpen] = useState(false);
   const [isProfileDialogOpen, setIsProfileDialogOpen] = useState(false);
+  const [isCategoryManagementOpen, setIsCategoryManagementOpen] = useState(false);
+  const [categories, setCategories] = useState(getCategories());
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -120,6 +131,10 @@ const HomePage = () => {
     navigate(`/video/${video.id}`);
   };
 
+  const refreshCategories = () => {
+    setCategories(getCategories());
+  };
+
   const filteredVideos = videos
     .filter((video) =>
       video.title.toLowerCase().includes(searchTerm.toLowerCase())
@@ -172,6 +187,17 @@ const HomePage = () => {
               >
                 <UserRound className="h-5 w-5" />
               </Button>
+              <Button 
+                variant="outline" 
+                size="icon" 
+                onClick={() => {
+                  setIsCategoryManagementOpen(true);
+                }}
+                className="rounded-full"
+                title="Edit Categories"
+              >
+                <Settings className="h-4 w-4" />
+              </Button>
               <Button variant="outline" size="icon" onClick={() => setIsOptionsDialogOpen(true)} className="rounded-full">
                 <SlidersHorizontal className="h-4 w-4" />
               </Button>
@@ -191,19 +217,55 @@ const HomePage = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
+            
+            <div className="relative">
+              <Carousel 
+                className="w-full"
+                opts={{
+                  align: "start",
+                  loop: true,
+                }}
+              >
+                <CarouselContent className="-ml-1">
+                  <CarouselItem className="pl-1 basis-auto">
+                    <Button 
+                      onClick={() => setSelectedCategory('all')} 
+                      variant={selectedCategory === 'all' ? 'default' : 'outline'}
+                      className="rounded-full"
+                    >
+                      All
+                    </Button>
+                  </CarouselItem>
+                  
+                  {categories.map((category) => (
+                    <CarouselItem key={category.id} className="pl-1 basis-auto">
+                      <Button 
+                        onClick={() => setSelectedCategory(category.id)} 
+                        variant={selectedCategory === category.id ? 'default' : 'outline'}
+                        className="rounded-full"
+                      >
+                        {category.name}
+                      </Button>
+                    </CarouselItem>
+                  ))}
+                  
+                  <CarouselItem className="pl-1 basis-auto">
+                    <Button 
+                      onClick={() => setSelectedCategory('photos')} 
+                      variant={selectedCategory === 'photos' ? 'default' : 'outline'}
+                      className="rounded-full"
+                    >
+                      <Image className="mr-1 h-4 w-4" />
+                      Photos
+                    </Button>
+                  </CarouselItem>
+                </CarouselContent>
+                <CarouselPrevious className="left-0" />
+                <CarouselNext className="right-0" />
+              </Carousel>
+            </div>
+
             <div className="flex flex-col sm:flex-row gap-4 justify-between">
-              <Tabs defaultValue="all" className="w-full sm:w-auto" onValueChange={(value) => setSelectedCategory(value as Category | 'all' | 'photos')}>
-                <TabsList className="grid grid-cols-5 w-full sm:w-auto rounded-full">
-                  <TabsTrigger value="all" className="rounded-full">All</TabsTrigger>
-                  <TabsTrigger value="aptitude" className="rounded-full">Aptitude</TabsTrigger>
-                  <TabsTrigger value="reasoning" className="rounded-full">Reasoning</TabsTrigger>
-                  <TabsTrigger value="english" className="rounded-full">English</TabsTrigger>
-                  <TabsTrigger value="photos" className="rounded-full">
-                    <Image className="mr-1 h-4 w-4" />
-                    Photos
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
               <div className="flex gap-2 justify-end">
                 <Button
                   variant={viewMode === 'grid' ? "default" : "outline"}
@@ -306,6 +368,12 @@ const HomePage = () => {
       <ProfileDialog
         open={isProfileDialogOpen}
         onClose={() => setIsProfileDialogOpen(false)}
+      />
+      
+      <CategoryManagementDialog
+        open={isCategoryManagementOpen}
+        onClose={() => setIsCategoryManagementOpen(false)}
+        onCategoriesChange={refreshCategories}
       />
     </div>
   );
