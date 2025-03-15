@@ -3,10 +3,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Button } from "./ui/button";
 import { Copy, Facebook, Link, Share2, Twitter } from "lucide-react";
 import { useState } from "react";
-import { Video, ShareOption } from "@/types/video";
+import { Video } from "@/types/video";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-media-query";
+
+type ShareOption = 'whatsapp' | 'facebook' | 'twitter' | 'copy' | 'native';
 
 interface ShareDialogProps {
   open: boolean;

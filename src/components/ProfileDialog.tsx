@@ -151,7 +151,7 @@ export const ProfileDialog = ({ open, onClose }: ProfileDialogProps) => {
       </div>
       
       <div className="flex flex-col gap-2 mt-4">
-        <Button variant="outline" className="w-full justify-start rounded-full" onClick={() => handleNavigate('/home')}>
+        <Button variant="outline" className="w-full justify-start rounded-full" onClick={() => handleNavigate('/')}>
           <Home className="mr-2 h-4 w-4" />
           Home
         </Button>

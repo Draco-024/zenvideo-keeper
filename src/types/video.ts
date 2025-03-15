@@ -1,11 +1,14 @@
+
 export type Category = 'aptitude' | 'reasoning' | 'english';
 export type SortOption = 'newest' | 'oldest' | 'alphabetical' | 'lastWatched';
 export type ViewMode = 'grid' | 'list';
+export type ShareOption = 'whatsapp' | 'facebook' | 'twitter' | 'copy' | 'native';
 
 export interface Comment {
   id: string;
   text: string;
   createdAt: number;
+  username?: string; // Added username field
 }
 
 export interface Video {
@@ -20,7 +23,7 @@ export interface Video {
   videoType: 'youtube' | 'googlephotos';
   lastWatched?: number;
   comments?: Comment[];
-  videoAvailable?: boolean; // Added this property to fix the TypeScript error
+  videoAvailable?: boolean;
 }
 
 export interface Playlist {

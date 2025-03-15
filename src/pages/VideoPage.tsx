@@ -100,14 +100,14 @@ const VideoPage = () => {
     }
   };
 
-  const handleAddComment = (commentText: Omit<Comment, 'id' | 'createdAt'>) => {
+  const handleAddComment = (commentData: Omit<Comment, 'id' | 'createdAt'>) => {
     if (!video || !video.id) return;
     
     const newComment: Comment = {
       id: `comment-${Date.now()}`,
       createdAt: Date.now(),
-      text: commentText.text,
-      username: commentText.username
+      text: commentData.text,
+      username: commentData.username
     };
     
     const updatedVideo = addCommentToVideo(video.id, newComment);

@@ -56,6 +56,7 @@ const App = () => {
         <BackHandler>
           <Routes>
             <Route path="/" element={<HomePage />} />
+            <Route path="/home" element={<HomePage />} />
             <Route path="/video/:id" element={<VideoPage />} />
             <Route path="/favorites" element={<FavoritesPage />} />
             <Route path="/playlists" element={<PlaylistsPage />} />

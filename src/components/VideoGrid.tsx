@@ -6,6 +6,11 @@ import { VideoListItem } from './VideoListItem';
 import { getYouTubeId } from '@/utils/helpers';
 import { validateYouTubeUrl } from '@/utils/videoValidator';
 import { useEffect, useState } from 'react';
+import { Card, CardContent, CardFooter } from './ui/card';
+import { formatDistanceToNow } from 'date-fns';
+import { Button } from './ui/button';
+import { Star, StarOff, BookOpen, Share2 } from 'lucide-react';
+import { Badge } from './ui/badge';
 
 export interface VideoGridProps {
   videos: Video[];
@@ -118,6 +123,57 @@ export const VideoGrid = ({
     }
   }, [videos]);
 
+  // Function to render title-only card for grid view
+  const renderTitleOnlyCard = (video: Video) => {
+    return (
+      <Card 
+        className="h-full flex flex-col overflow-hidden group transition-all cursor-pointer hover:shadow-md"
+        onClick={() => onView(video)}
+      >
+        <CardContent className="flex-grow p-4">
+          <div className="flex justify-between items-start mb-2">
+            <h3 className="font-semibold line-clamp-2">{video.title}</h3>
+            {video.favorite && (
+              <Star className="h-4 w-4 text-yellow-500 fill-yellow-500 flex-shrink-0 ml-2" />
+            )}
+          </div>
+          
+          <div className="flex justify-between items-end">
+            <p className="text-xs text-muted-foreground">
+              Added {formatDistanceToNow(video.createdAt, { addSuffix: true })}
+            </p>
+            <Badge variant={video.category === 'aptitude' ? 'default' : video.category === 'reasoning' ? 'secondary' : 'outline'}>
+              {video.category.charAt(0).toUpperCase() + video.category.slice(1)}
+            </Badge>
+          </div>
+        </CardContent>
+        
+        <CardFooter className="p-2 border-t flex justify-between">
+          <Button variant="ghost" size="sm" onClick={(e) => { 
+            e.stopPropagation();
+            handleFavoriteToggle(video);
+          }} title={video.favorite ? "Remove from favorites" : "Add to favorites"}>
+            {video.favorite ? <StarOff className="h-4 w-4" /> : <Star className="h-4 w-4" />}
+          </Button>
+          
+          <div className="flex gap-1">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(video);
+              }} 
+              title="Change category"
+            >
+              <BookOpen className="h-4 w-4" />
+            </Button>
+          </div>
+        </CardFooter>
+      </Card>
+    );
+  };
+
   const horizontalClassName = layoutMode === 'horizontal' 
     ? 'flex flex-row flex-nowrap overflow-x-auto pb-4 space-y-0 space-x-2 hide-scrollbar' 
     : '';
@@ -134,12 +190,7 @@ export const VideoGrid = ({
       >
         {validatedVideos.map((video) => (
           <motion.div key={video.id} variants={item} className={layoutMode === 'horizontal' ? 'min-w-[280px] flex-shrink-0 mx-1' : ''}>
-            <VideoCard 
-              video={video} 
-              onView={onView} 
-              onFavorite={handleFavoriteToggle}
-              onChangeCategory={onEdit}
-            />
+            {renderTitleOnlyCard(video)}
           </motion.div>
         ))}
       </motion.div>
