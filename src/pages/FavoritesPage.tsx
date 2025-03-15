@@ -49,6 +49,10 @@ const FavoritesPage = () => {
     navigate(`/video/${video.id}`);
   };
 
+  const goBack = () => {
+    navigate('/');
+  };
+
   const filteredVideos = videos.filter((video) =>
     video.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -63,7 +67,7 @@ const FavoritesPage = () => {
       >
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center mb-6">
-            <Button variant="ghost" onClick={() => navigate('/')} className="mr-4">
+            <Button variant="ghost" onClick={goBack} className="mr-4">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back
             </Button>
@@ -116,7 +120,7 @@ const FavoritesPage = () => {
               <p className="text-muted-foreground mb-6">
                 {searchTerm ? "Try adjusting your search" : "Add videos to your favorites to see them here"}
               </p>
-              <Button onClick={() => navigate('/')}>
+              <Button onClick={goBack}>
                 Browse Videos
               </Button>
             </div>

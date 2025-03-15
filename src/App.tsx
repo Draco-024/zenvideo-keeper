@@ -18,11 +18,14 @@ const BackHandler = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const handleBackButton = (event: PopStateEvent) => {
-      if (location.pathname !== '/') {
-        // Let the default back behavior happen
-      } else {
-        // We're at the home page, consider showing a confirmation dialog to exit
-        // or do nothing to prevent exit
+      // Normal back button behavior is preserved for navigation
+      // History handling is managed by React Router
+      
+      // Optionally, you could show a confirmation when trying to exit the app
+      if (location.pathname === '/' && window.history.state?.idx === 0) {
+        // We're at the home page and at the first entry in history stack
+        // Could show a confirmation dialog here if desired
+        // For now, we'll let the default behavior handle it
       }
     };
 

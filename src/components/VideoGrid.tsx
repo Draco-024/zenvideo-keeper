@@ -123,19 +123,33 @@ export const VideoGrid = ({
     }
   }, [videos]);
 
-  // Function to render title-only card for grid view
-  const renderTitleOnlyCard = (video: Video) => {
+  // Function to render grid card with thumbnail and title
+  const renderGridCard = (video: Video) => {
+    const thumbnailUrl = video.thumbnail || 'placeholder.svg';
+    
     return (
       <Card 
         className="h-full flex flex-col overflow-hidden group transition-all cursor-pointer hover:shadow-md"
         onClick={() => onView(video)}
       >
+        <div className="relative aspect-video overflow-hidden">
+          <img 
+            src={thumbnailUrl} 
+            alt={video.title} 
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-opacity duration-300"></div>
+          
+          {video.favorite && (
+            <div className="absolute top-2 right-2">
+              <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
+            </div>
+          )}
+        </div>
+        
         <CardContent className="flex-grow p-4">
           <div className="flex justify-between items-start mb-2">
             <h3 className="font-semibold line-clamp-2">{video.title}</h3>
-            {video.favorite && (
-              <Star className="h-4 w-4 text-yellow-500 fill-yellow-500 flex-shrink-0 ml-2" />
-            )}
           </div>
           
           <div className="flex justify-between items-end">
@@ -174,6 +188,30 @@ export const VideoGrid = ({
     );
   };
 
+  // Function to render title-only card for list view
+  const renderTitleOnlyCard = (video: Video) => {
+    return (
+      <Card 
+        className="overflow-hidden group transition-all cursor-pointer hover:shadow-md"
+        onClick={() => onView(video)}
+      >
+        <CardContent className="p-4">
+          <div className="flex justify-between items-start">
+            <h3 className="font-semibold line-clamp-2">{video.title}</h3>
+            <div className="flex gap-2 ml-2 flex-shrink-0">
+              {video.favorite && (
+                <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+              )}
+              <Badge variant={video.category === 'aptitude' ? 'default' : video.category === 'reasoning' ? 'secondary' : 'outline'}>
+                {video.category.charAt(0).toUpperCase() + video.category.slice(1)}
+              </Badge>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  };
+
   const horizontalClassName = layoutMode === 'horizontal' 
     ? 'flex flex-row flex-nowrap overflow-x-auto pb-4 space-y-0 space-x-2 hide-scrollbar' 
     : '';
@@ -190,7 +228,7 @@ export const VideoGrid = ({
       >
         {validatedVideos.map((video) => (
           <motion.div key={video.id} variants={item} className={layoutMode === 'horizontal' ? 'min-w-[280px] flex-shrink-0 mx-1' : ''}>
-            {renderTitleOnlyCard(video)}
+            {renderGridCard(video)}
           </motion.div>
         ))}
       </motion.div>
@@ -211,14 +249,7 @@ export const VideoGrid = ({
           variants={item}
           className={layoutMode === 'horizontal' ? 'min-w-[400px] flex-shrink-0 mx-1' : ''}
         >
-          <VideoListItem 
-            video={video} 
-            onView={onView} 
-            onFavorite={handleFavoriteToggle} 
-            onEdit={onEdit} 
-            onDelete={() => onDelete(video.id)}
-            showBanner={showBannerInListView}
-          />
+          {renderTitleOnlyCard(video)}
         </motion.div>
       ))}
     </motion.div>
