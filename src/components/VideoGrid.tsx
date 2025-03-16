@@ -1,7 +1,7 @@
 
 import { Video, ViewMode } from '@/types/video';
 import { VideoCard } from './VideoCard';
-import { motion } from 'framer-motion';
+import { motion, Reorder } from 'framer-motion';
 import { VideoListItem } from './VideoListItem';
 import { getYouTubeId } from '@/utils/helpers';
 import { validateYouTubeUrl } from '@/utils/videoValidator';
@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent, CardFooter } from './ui/card';
 import { formatDistanceToNow } from 'date-fns';
 import { Button } from './ui/button';
-import { Star, StarOff, BookOpen, Share2 } from 'lucide-react';
+import { Star, StarOff, BookOpen } from 'lucide-react';
 import { Badge } from './ui/badge';
 
 export interface VideoGridProps {
@@ -21,6 +21,9 @@ export interface VideoGridProps {
   onView: (video: Video) => void;
   showBannerInListView?: boolean;
   layoutMode?: 'horizontal' | 'vertical';
+  columns?: number;
+  enableDragAndDrop?: boolean;
+  onReorder?: (videos: Video[]) => void;
 }
 
 export const VideoGrid = ({ 
@@ -31,13 +34,28 @@ export const VideoGrid = ({
   onFavorite, 
   onView,
   showBannerInListView = true,
-  layoutMode = 'vertical'
+  layoutMode = 'vertical',
+  columns = 3,
+  enableDragAndDrop = false,
+  onReorder
 }: VideoGridProps) => {
   const [validatedVideos, setValidatedVideos] = useState<Video[]>([]);
   const [isValidating, setIsValidating] = useState(false);
+  const [draggedVideos, setDraggedVideos] = useState<Video[]>([]);
 
   const handleFavoriteToggle = (video: Video) => {
     onFavorite(video);
+  };
+
+  useEffect(() => {
+    setDraggedVideos(videos);
+  }, [videos]);
+
+  const handleReorder = (newOrder: Video[]) => {
+    setDraggedVideos(newOrder);
+    if (onReorder) {
+      onReorder(newOrder);
+    }
   };
 
   const container = {
@@ -212,6 +230,16 @@ export const VideoGrid = ({
     );
   };
 
+  const getGridColumnClass = () => {
+    switch(columns) {
+      case 1: return 'grid-cols-1';
+      case 2: return 'grid-cols-1 sm:grid-cols-2';
+      case 3: return 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3';
+      case 4: return 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4';
+      default: return 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4';
+    }
+  };
+
   const horizontalClassName = layoutMode === 'horizontal' 
     ? 'flex flex-row flex-nowrap overflow-x-auto pb-4 space-y-0 space-x-2 hide-scrollbar' 
     : '';
@@ -219,7 +247,7 @@ export const VideoGrid = ({
   if (viewMode === 'grid') {
     return (
       <motion.div 
-        className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 ${
+        className={`grid ${getGridColumnClass()} gap-4 ${
           layoutMode === 'horizontal' ? 'flex flex-row flex-nowrap overflow-x-auto pb-4 grid-flow-col auto-cols-max hide-scrollbar' : ''
         }`}
         variants={container}
@@ -235,7 +263,31 @@ export const VideoGrid = ({
     );
   }
 
-  // List view
+  // List view with drag and drop
+  if (enableDragAndDrop && onReorder) {
+    return (
+      <Reorder.Group 
+        axis="y" 
+        values={draggedVideos} 
+        onReorder={handleReorder}
+        className="space-y-2"
+      >
+        {draggedVideos.map((video) => (
+          <Reorder.Item 
+            key={video.id} 
+            value={video}
+            className="cursor-move"
+          >
+            <div className="touch-none">
+              {renderTitleOnlyCard(video)}
+            </div>
+          </Reorder.Item>
+        ))}
+      </Reorder.Group>
+    );
+  }
+
+  // Standard list view (no drag and drop)
   return (
     <motion.div 
       className={`space-y-2 ${horizontalClassName}`}

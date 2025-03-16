@@ -8,36 +8,73 @@ import PlaylistDetailPage from './pages/PlaylistDetailPage';
 import SettingsPage from './pages/SettingsPage';
 import NotFound from './pages/NotFound';
 import DownloadPage from './pages/DownloadPage';
-import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation, useMatch } from 'react-router-dom';
 import { SplashScreen } from './components/SplashScreen';
 import './App.css';
 
 const BackHandler = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const isHomePage = location.pathname === '/' || location.pathname === '/home';
 
   useEffect(() => {
+    // Enhanced back button handling
     const handleBackButton = (event: PopStateEvent) => {
-      // The History API will handle most of the navigation
-      // We only need to customize behavior for the home route
+      // If we're at home and user tries to go back, handle it specially
+      if (isHomePage && window.history.state?.idx === 0) {
+        // At home page and at first entry in history, show exit confirmation
+        console.log('At home - would show exit confirmation in production');
+        // In a mobile app, we would show a confirmation dialog
+        /*
+        if (window.confirm('Are you sure you want to exit the app?')) {
+          // In a mobile context, this would exit the app
+          // For web, we just let the browser handle it
+        } else {
+          // Prevent default back behavior
+          history.pushState(null, '', window.location.href);
+        }
+        */
+      }
+    };
+
+    // Handle swipe gestures for mobile (simple implementation)
+    let touchStartX = 0;
+    let touchEndX = 0;
+    
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartX = e.touches[0].clientX;
+    };
+    
+    const handleTouchEnd = (e: TouchEvent) => {
+      touchEndX = e.changedTouches[0].clientX;
+      handleSwipe();
+    };
+    
+    const handleSwipe = () => {
+      // Detect right-to-left swipe (going forward)
+      if (touchStartX - touchEndX > 100) {
+        // Forward navigation logic if needed
+      }
       
-      if (location.pathname === '/' && window.history.state?.idx === 0) {
-        // We're at the home page and at the first entry in history stack
-        // This is where we'd handle app exit confirmation if needed
-        // For now, just let the default browser behavior handle it
-        console.log('At home and at first entry in history - would exit app in a mobile context');
-      } else {
-        // For all other routes, just let React Router handle the navigation
-        console.log('Navigation handled by React Router:', location.pathname);
+      // Detect left-to-right swipe (going back)
+      if (touchEndX - touchStartX > 100) {
+        // If not on home, go back
+        if (!isHomePage) {
+          navigate(-1);
+        }
       }
     };
 
     window.addEventListener('popstate', handleBackButton);
+    document.addEventListener('touchstart', handleTouchStart, false);
+    document.addEventListener('touchend', handleTouchEnd, false);
 
     return () => {
       window.removeEventListener('popstate', handleBackButton);
+      document.removeEventListener('touchstart', handleTouchStart);
+      document.removeEventListener('touchend', handleTouchEnd);
     };
-  }, [navigate, location]);
+  }, [navigate, isHomePage]);
 
   return <>{children}</>;
 };

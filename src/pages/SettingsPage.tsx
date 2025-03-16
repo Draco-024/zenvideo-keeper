@@ -1,13 +1,14 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Youtube, Upload, Download, Trash2 } from "lucide-react";
+import { ArrowLeft, Youtube, Upload, Download, Trash2, ExternalLink } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { clearAllVideos, getVideos } from "@/utils/storage";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
+import { AppNavBar } from "@/components/AppNavBar";
 
 const SettingsPage = () => {
   const navigate = useNavigate();
@@ -18,6 +19,15 @@ const SettingsPage = () => {
   
   const handleImportYouTubePlaylist = () => {
     // This would typically connect to the YouTube API to fetch playlist videos
+    if (!youtubePlaylistUrl.includes('youtube.com/playlist') && !youtubePlaylistUrl.includes('youtube.com/watch')) {
+      toast({
+        title: "Invalid URL",
+        description: "Please enter a valid YouTube playlist URL.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     setIsImporting(true);
     
     // Simulate API call with timeout
@@ -54,7 +64,7 @@ const SettingsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-16">
       <motion.div 
         className="max-w-3xl mx-auto p-6"
         initial={{ opacity: 0 }}
@@ -71,6 +81,31 @@ const SettingsPage = () => {
         </div>
         
         <div className="space-y-8">
+          {/* Y2Mate Integration */}
+          <div className="bg-card rounded-lg p-6 shadow-sm">
+            <h2 className="text-xl font-semibold mb-4">Video Downloaders</h2>
+            <div className="space-y-4">
+              <div>
+                <p className="text-muted-foreground text-sm mb-3">
+                  Download YouTube videos directly using Y2Mate
+                </p>
+                <Button 
+                  variant="outline" 
+                  asChild
+                  className="w-full sm:w-auto"
+                >
+                  <a href="https://y2mate.nu/en-isGt/" target="_blank" rel="noopener noreferrer">
+                    <ExternalLink className="mr-2 h-4 w-4" />
+                    Open Y2Mate
+                  </a>
+                </Button>
+                <p className="text-xs text-muted-foreground mt-2">
+                  Y2Mate allows you to download videos from YouTube and other platforms
+                </p>
+              </div>
+            </div>
+          </div>
+          
           {/* YouTube Playlist Integration */}
           <div className="bg-card rounded-lg p-6 shadow-sm">
             <h2 className="text-xl font-semibold mb-4">YouTube Playlist</h2>
@@ -176,6 +211,8 @@ const SettingsPage = () => {
           </div>
         </div>
       </motion.div>
+      
+      <AppNavBar />
     </div>
   );
 };

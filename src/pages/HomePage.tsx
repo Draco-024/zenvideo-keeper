@@ -1,15 +1,14 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { VideoGrid } from '../components/VideoGrid';
 import { AddVideoDialog } from '../components/AddVideoDialog';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Video, Category, SortOption, ViewMode } from '../types/video';
 import { addVideo, getVideos, deleteVideo, updateVideo, importSampleVideos, forceRefreshVideos } from '../utils/storage';
-import { Plus, Search, Grid, List, SlidersHorizontal, UserRound, Image, Download, Settings } from 'lucide-react';
+import { Plus, Search, Settings, UserRound } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger } from '../components/ui/select';
 import { ViewOptionsDialog } from '@/components/ViewOptionsDialog';
 import { useNavigate } from 'react-router-dom';
 import { ProfileDialog } from '@/components/ProfileDialog';
@@ -22,6 +21,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { AppNavBar } from '@/components/AppNavBar';
 
 const HomePage = () => {
   const [videos, setVideos] = useState<Video[]>([]);
@@ -36,10 +36,28 @@ const HomePage = () => {
   const [categories, setCategories] = useState(getCategories());
   const { toast } = useToast();
   const navigate = useNavigate();
-
+  
+  const [videoGridColumns, setVideoGridColumns] = useState(4);
+  
   useEffect(() => {
     forceRefreshVideos();
     setVideos(getVideos());
+    
+    const handleResize = () => {
+      if (window.innerWidth >= 1200) {
+        setVideoGridColumns(4);
+      } else if (window.innerWidth >= 768) {
+        setVideoGridColumns(3);
+      } else if (window.innerWidth >= 640) {
+        setVideoGridColumns(2);
+      } else {
+        setVideoGridColumns(1);
+      }
+    };
+    
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   useEffect(() => {
@@ -161,7 +179,7 @@ const HomePage = () => {
   });
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-16">
       <motion.header 
         className="p-6 border-b"
         initial={{ opacity: 0, y: -20 }}
@@ -197,13 +215,6 @@ const HomePage = () => {
                 title="Edit Categories"
               >
                 <Settings className="h-4 w-4" />
-              </Button>
-              <Button variant="outline" size="icon" onClick={() => setIsOptionsDialogOpen(true)} className="rounded-full">
-                <SlidersHorizontal className="h-4 w-4" />
-              </Button>
-              <Button onClick={() => setIsAddDialogOpen(true)} className="rounded-full">
-                <Plus className="mr-2 h-4 w-4" />
-                Add Video
               </Button>
             </div>
           </div>
@@ -248,70 +259,26 @@ const HomePage = () => {
                       </Button>
                     </CarouselItem>
                   ))}
-                  
-                  <CarouselItem className="pl-1 basis-auto">
-                    <Button 
-                      onClick={() => setSelectedCategory('photos')} 
-                      variant={selectedCategory === 'photos' ? 'default' : 'outline'}
-                      className="rounded-full"
-                    >
-                      <Image className="mr-1 h-4 w-4" />
-                      Photos
-                    </Button>
-                  </CarouselItem>
                 </CarouselContent>
                 <CarouselPrevious className="left-0" />
                 <CarouselNext className="right-0" />
               </Carousel>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-between">
-              <div className="flex gap-2 justify-end">
-                <Button
-                  variant={viewMode === 'grid' ? "default" : "outline"}
-                  size="icon"
-                  onClick={() => setViewMode('grid')}
-                  className="rounded-full"
-                >
-                  <Grid className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant={viewMode === 'list' ? "default" : "outline"}
-                  size="icon"
-                  onClick={() => setViewMode('list')}
-                  className="rounded-full"
-                >
-                  <List className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="rounded-full"
-                  onClick={() => {
-                    navigate('/download');
-                    toast({
-                      title: "Download Videos",
-                      description: "Search and download your favorite YouTube videos.",
-                    });
-                  }}
-                >
-                  <Download className="mr-2 h-4 w-4" />
-                  Download
-                </Button>
-                <Select value={sortOption} onValueChange={(value) => setSortOption(value as SortOption)}>
-                  <SelectTrigger className="w-[140px] rounded-full">
-                    <div className="flex items-center">
-                      <span>Sort By</span>
-                    </div>
-                  </SelectTrigger>
-                  <SelectContent className="rounded-xl">
-                    <SelectItem value="newest">Newest</SelectItem>
-                    <SelectItem value="oldest">Oldest</SelectItem>
-                    <SelectItem value="alphabetical">A-Z</SelectItem>
-                    <SelectItem value="lastWatched">Last Watched</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="flex justify-end">
+              <Select value={sortOption} onValueChange={(value) => setSortOption(value as SortOption)}>
+                <SelectTrigger className="w-[140px] rounded-full">
+                  <div className="flex items-center">
+                    <span>Sort By</span>
+                  </div>
+                </SelectTrigger>
+                <SelectContent className="rounded-xl">
+                  <SelectItem value="newest">Newest</SelectItem>
+                  <SelectItem value="oldest">Oldest</SelectItem>
+                  <SelectItem value="alphabetical">A-Z</SelectItem>
+                  <SelectItem value="lastWatched">Last Watched</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </div>
@@ -345,10 +312,21 @@ const HomePage = () => {
               onFavorite={handleToggleFavorite}
               onView={handleViewVideo}
               showBannerInListView={false}
+              columns={videoGridColumns}
+              enableDragAndDrop={viewMode === 'list'}
+              onReorder={(reorderedVideos) => {
+                console.log("Reordered videos:", reorderedVideos);
+              }}
             />
           )}
         </motion.div>
       </main>
+
+      <AppNavBar 
+        onAddVideo={() => setIsAddDialogOpen(true)}
+        onViewModeChange={setViewMode}
+        currentViewMode={viewMode}
+      />
 
       <AddVideoDialog
         open={isAddDialogOpen}

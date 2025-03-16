@@ -4,7 +4,7 @@ import { Video } from '@/types/video';
 import { formatDistanceToNow } from 'date-fns';
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
-import { Star, StarOff, Edit, Trash, BookOpen, AlertTriangle } from 'lucide-react';
+import { Star, StarOff, Edit, Trash, BookOpen, AlertTriangle, GripVertical } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from './ui/alert-dialog';
 import { ChangeCategoryDialog } from './ChangeCategoryDialog';
@@ -19,6 +19,7 @@ interface VideoListItemProps {
   onEdit: (video: Video) => void;
   onDelete: () => void;
   showBanner?: boolean;
+  isDraggable?: boolean;
 }
 
 export const VideoListItem = ({ 
@@ -27,7 +28,8 @@ export const VideoListItem = ({
   onFavorite, 
   onEdit, 
   onDelete,
-  showBanner = true
+  showBanner = true,
+  isDraggable = false
 }: VideoListItemProps) => {
   const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
   const [thumbnailUrl, setThumbnailUrl] = useState<string>(video.thumbnail || 'placeholder.svg');
@@ -66,9 +68,15 @@ export const VideoListItem = ({
 
   return (
     <>
-      <Card className={`overflow-hidden hover:shadow-md transition-shadow duration-300 ${isVideoUnavailable ? 'opacity-80' : ''}`}>
+      <Card className={`overflow-hidden hover:shadow-md transition-shadow duration-300 ${isVideoUnavailable ? 'opacity-80' : ''} ${isDraggable ? 'cursor-move' : ''}`}>
         <CardContent className="p-0">
           <div className="flex flex-col sm:flex-row">
+            {isDraggable && (
+              <div className="p-2 flex items-center justify-center sm:border-r">
+                <GripVertical className="h-5 w-5 text-muted-foreground" />
+              </div>
+            )}
+            
             <div 
               className="relative w-full sm:w-48 aspect-video sm:aspect-[16/10] cursor-pointer"
               onClick={() => onView(video)}
