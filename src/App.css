@@ -2,7 +2,7 @@
 #root {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 0;
   text-align: center;
 }
 
@@ -59,7 +59,7 @@ input[type="text"], input[type="search"] {
   color: hsl(var(--primary-foreground));
   animation: notification-fade 3s forwards;
   position: fixed;
-  bottom: 1rem;
+  bottom: 5rem;
   right: 1rem;
   z-index: 100;
   max-width: 90%;
@@ -183,7 +183,7 @@ input[type="text"], input[type="search"] {
 
 /* Create spacing at bottom of page for navigation bar */
 body {
-  padding-bottom: 4rem;
+  padding-bottom: 5rem;
 }
 
 /* Add bottom margin to main content areas */
@@ -199,4 +199,58 @@ main {
 
 .animate-fade-in {
   animation: fade-in 0.3s ease-out forwards;
+}
+
+/* Premium UI enhancements */
+.glass-effect {
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.premium-card {
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.premium-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Drag and drop enhancements */
+.sortable-ghost {
+  opacity: 0.5;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.sortable-drag {
+  opacity: 0.9;
+  transform: scale(1.02);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Y2Mate button styling */
+.y2mate-button {
+  position: fixed;
+  bottom: 5rem;
+  right: 1rem;
+  background-color: white;
+  color: #333;
+  border-radius: 12px;
+  padding: 0.5rem 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  animation: slide-in 0.3s ease forwards;
+}
+
+@keyframes slide-in {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
 }

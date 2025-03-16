@@ -153,6 +153,16 @@ const HomePage = () => {
     setCategories(getCategories());
   };
 
+  const handleViewModeChange = (mode: ViewMode) => {
+    setViewMode(mode);
+    localStorage.setItem('viewMode', mode);
+  };
+
+  const handleReorderVideos = (reorderedVideos: Video[]) => {
+    console.log("Reordered videos:", reorderedVideos);
+    setVideos(reorderedVideos);
+  };
+
   const filteredVideos = videos
     .filter((video) =>
       video.title.toLowerCase().includes(searchTerm.toLowerCase())
@@ -178,18 +188,30 @@ const HomePage = () => {
     }
   });
 
+  const pageVariants = {
+    initial: { opacity: 0 },
+    in: { opacity: 1, transition: { duration: 0.3 } },
+    out: { opacity: 0, transition: { duration: 0.3 } }
+  };
+
   return (
-    <div className="min-h-screen bg-background pb-16">
+    <motion.div 
+      className="min-h-screen bg-background pb-20"
+      initial="initial"
+      animate="in"
+      exit="out"
+      variants={pageVariants}
+    >
       <motion.header 
-        className="p-6 border-b"
+        className="p-4 md:p-6 border-b bg-gradient-to-r from-background to-muted/30"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
         <div className="max-w-7xl mx-auto">
-          <div className="flex justify-between items-center mb-6">
+          <div className="flex justify-between items-center mb-4">
             <motion.h1 
-              className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70"
+              className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2, duration: 0.5 }}
@@ -218,7 +240,7 @@ const HomePage = () => {
               </Button>
             </div>
           </div>
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-3">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
@@ -284,14 +306,15 @@ const HomePage = () => {
         </div>
       </motion.header>
 
-      <main className="max-w-7xl mx-auto py-8 px-4">
+      <main className="max-w-7xl mx-auto py-6 px-4">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.3 }}
+          className="bg-card rounded-xl shadow-sm p-4"
         >
           {sortedVideos.length === 0 ? (
-            <div className="text-center py-16">
+            <div className="text-center py-12 md:py-16">
               <h3 className="text-xl font-medium mb-2">No videos found</h3>
               <p className="text-muted-foreground mb-6">
                 {searchTerm || selectedCategory !== 'all' 
@@ -314,9 +337,7 @@ const HomePage = () => {
               showBannerInListView={false}
               columns={videoGridColumns}
               enableDragAndDrop={viewMode === 'list'}
-              onReorder={(reorderedVideos) => {
-                console.log("Reordered videos:", reorderedVideos);
-              }}
+              onReorder={handleReorderVideos}
             />
           )}
         </motion.div>
@@ -324,7 +345,7 @@ const HomePage = () => {
 
       <AppNavBar 
         onAddVideo={() => setIsAddDialogOpen(true)}
-        onViewModeChange={setViewMode}
+        onViewModeChange={handleViewModeChange}
         currentViewMode={viewMode}
       />
 
@@ -353,7 +374,7 @@ const HomePage = () => {
         onClose={() => setIsCategoryManagementOpen(false)}
         onCategoriesChange={refreshCategories}
       />
-    </div>
+    </motion.div>
   );
 };
 

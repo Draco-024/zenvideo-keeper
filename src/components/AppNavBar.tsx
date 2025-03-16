@@ -76,7 +76,7 @@ export const AppNavBar = ({
         
         {onAddVideo && (
           <Button 
-            variant="primary" 
+            variant="default" 
             size="icon"
             onClick={onAddVideo}
             className="rounded-full bg-primary text-primary-foreground"
